@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <title>Оформление заказа</title>
+  <style>
+    a,
+    button,
+    input,
+    select,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Alice, sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    menu, ol, ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .div,
+    .div * {
+      box-sizing: border-box;
+      scrollbar-width: none;
+    }
+    .div {
+      background: #222222;
+      height: 694px;
+      position: relative;
+      overflow-y: auto;
+    }
+    .div2 {
+      width: 286px;
+      height: 41px;
+      position: absolute;
+      left: 74px;
+      top: 59px;
+    }
+    .div3 {
+      color: #ffffff;
+      text-align: left;
+      font-size: 22px;
+      font-weight: 400;
+      position: absolute;
+      left: 0px;
+      top: -31px;
+      width: 265px;
+      height: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .div4 {
+      background: #121212;
+      border-radius: 7px;
+      width: calc(100% - 148px); /* Убираем отступы по бокам (по 74px с каждой стороны) */
+      left: 74px;
+      height: 476px;
+      position: absolute;
+      top: 160px;
+    }
+    .div5 {
+      color: #ffffff;
+      text-align: left;
+      font-size: 22px;
+      font-weight: 400;
+      position: absolute;
+      left: 0px;
+      top: -31px;
+      width: 371px;
+      height: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .div6 {
+      width: 376px;
+      height: 41px;
+      position: absolute;
+      left: 21px;
+      top: 55px;
+    }
+    .div10:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+    .div7 {
+      color: #ffffff;
+      text-align: left;
+      font-size: 22px;
+      font-weight: 400;
+      position: absolute;
+      left: 21px;
+      top: 121px;
+      width: 265px;
+      height: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .div8 {
+      background: #000000;
+      border-radius: 7px;
+      width: 119px;
+      height: 61px;
+      position: absolute;
+      left: 21px;
+      top: 162px;
+    }
+    .div8:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+    .div9 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 400;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 119px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .div10 {
+      background: #000000;
+      border-radius: 7px;
+      width: 119px;
+      height: 61px;
+      position: absolute;
+      left: 165px;
+      top: 162px;
+    }
+
+    .div11 {
+      background: #000000;
+      border-radius: 7px;
+      width: 119px;
+      height: 61px;
+      position: absolute;
+      left: 309px;
+      top: 162px;
+    }
+    .div11:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+    .div12 {
+      background: #121212;
+      border-radius: 7px;
+      width: calc(100% - 148px); /* Убираем отступы по бокам (по 74px с каждой стороны) */
+      left: 74px;
+      height: 137px;
+      position: absolute;
+      top: 701px;
+    }
+    .div13 {
+      color: #ffffff;
+      text-align: left;
+      font-size: 24px;
+      font-weight: 400;
+      position: absolute;
+      left: 0px;
+      top: -31px;
+      width: 358px;
+      height: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .div14 {
+      background: #000000;
+      border-radius: 7px;
+      width: 149px;
+      height: 87px;
+      position: absolute;
+      left: 18px;
+      top: 21px;
+    }
+    .div14:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+    .div15 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 400;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 149px;
+      height: 87px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .div16 {
+      background: #000000;
+      border-radius: 7px;
+      width: 149px;
+      height: 87px;
+      position: absolute;
+      left: 209px;
+      top: 21px;
+    }
+    .div16:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+    .sber-pay {
+      color: #ffffff;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 400;
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 149px;
+      height: 87px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .div17 {
+      background: #000000;
+      border-radius: 7px;
+      width: 149px;
+      height: 87px;
+      position: absolute;
+      left: 400px;
+      top: 21px;
+    }
+    .div17:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+    .div18 {
+      background: #000000;
+      border-radius: 7px;
+      width: 248px;
+      height: 74px;
+      top: 879px;
+      position: absolute;
+      bottom: 10px; /* Отступ от низа страницы */
+      left: 50%; /* Центрируем по горизонтали */
+      transform: translateX(-50%);
+    }
+    .div18:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+    .div19 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 400;
+      position: absolute;
+      left: 0px;
+      top: 8px;
+      width: 248px;
+      height: 57px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map {
+      width: 60%;
+      height: calc(100% - 40px); /* Учитываем внутренние отступы */
+      border-radius: 7px;
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%); /* Центрируем по вертикали */
+    }
+      .input1 {
+        background-color: #fff;
+        border-radius: 7px;
+        height: 40px;
+        padding: 0 10px;
+        font-size: 14px;
+        border: none;
+        width: 300px;
+      }
+
+    .input2 {
+      background-color: #fff;
+      border-radius: 7px;
+      height: 40px;
+      padding: 0 10px;
+      font-size: 14px;
+      border: none;
+      width: 300px;
+    }
+
+    .suggestions-list {
+      list-style: none;
+      padding: 0;
+      margin: 5px 0;
+      background: white;
+      border: 1px solid #ccc;
+      position: absolute;
+      width: 250px;
+      z-index: 1000;
+      display: none;
+    }
+
+    .suggestion-item {
+      padding: 5px;
+      cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+      background: #f0f0f0;
+    }
+  </style>
+  <title>Document</title>
+</head>
+<body>
+<div class="div">
+  <div class="div2">
+    <div class="div3">Номер получателя:</div>
+    <input type="text" placeholder="Введите номер телефона" class="input1"/>
+  </div>
+  <div class="div4">
+    <div class="div5">Выберите способ и адрес доставки:</div>
+    <div class="div6">
+      <input type="text" id="address" placeholder="Введите адрес" class="input2"/>
+      <ul id="suggestions" class="suggestions-list"></ul>
+      <div class="div3">Адрес доставки:</div>
+    </div>
+    <div id="map" class="map"></div>
+    <div class="div7">Способ доставки:</div>
+    <div class="div8"><div class="div9">Почта</div></div>
+    <div class="div10"><div class="div9">Курьер</div></div>
+    <div class="div11"><div class="div9">СДЭК</div></div>
+  </div>
+  <div class="div12">
+    <div class="div13">Выберите способ оплаты:</div>
+    <div class="div14"><div class="div15">СБП</div></div>
+    <div class="div16"><div class="sber-pay">SberPay</div></div>
+    <div class="div17"><div class="div15">Карта</div></div>
+  </div>
+  <div class="div18">
+    <div class="div19">Подтвердить заказ</div>
+  </div>
+</div>
+<script src="https://api-maps.yandex.ru/2.1/?apikey=f1c36d0b-0581-4104-b504-d828f3368d59&lang=ru_RU"></script>
+<script src="/static/making_order.js"></script>
+</body>
+</html>

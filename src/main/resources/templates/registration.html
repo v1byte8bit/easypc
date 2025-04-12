@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <title>Регистрация</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Alice', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: #222222;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .rectangle-12 {
+      background: #121212;
+      border-radius: 10px;
+      width: 839px;
+      height: 564px; /* Фиксированная высота блока */
+      position: relative;
+      padding: 10px 10px; /* Добавляем отступы внутри блока */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .div6 {
+      color: #ffffff;
+      text-align: center;
+      font-size: 48px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .div10,
+    .div4,
+    .div2 {
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-field {
+      background: #ffffff;
+      border-radius: 7px;
+      width: 513px;
+      height: 50px;
+      border: 2px solid transparent;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 30px;
+    }
+
+    .input-field:hover {
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+    }
+
+    .div7 {
+      background: #000000;
+      border-radius: 7px;
+      width: 205px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      position: absolute;
+      bottom: 20px;
+      left: 50%;  /* Центрируем по горизонтали */
+      transform: translateX(-50%);  /* Центрируем по горизонтали */
+    }
+
+    .div7:hover {
+      background-color: #444444;
+      box-shadow: 0 0 8px #d3d3d3;
+    }
+
+    .div8 {
+      color: #ffffff;
+      font-size: 26px;
+    }
+
+    .radio-container {
+      position: absolute;
+      bottom: 120px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.3s ease;
+      left: 30%;
+    }
+
+    .radio-container1 {
+      position: absolute;
+      bottom: 120px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.3s ease;
+      left: 70%;
+    }
+
+    .radio-container input, .radio-container1 input {
+      width: 25px;
+      height: 25px;
+      background-color: #fff;
+      border: 3px solid #000;
+      border-radius: 50%; /* Круглая форма для радио кнопки */
+      position: relative;
+      transition: background-color 0.3s ease;
+    }
+
+    .radio-container input:checked, .radio-container1 input:checked  {
+      background-color: #87CEEB; /* Зеленый цвет для выбранной радио кнопки */
+    }
+
+    .radio-container input:checked + .radio-label, .radio-container1 input:checked + .radio-label {
+      font-weight: bold;
+      color: #ffffff; /* Зеленый цвет текста для выбранной кнопки */
+    }
+
+    .radio-label {
+      color: #ffffff;
+      font-size: 18px;
+      margin-left: 10px;
+    }
+
+
+  </style>
+</head>
+<body>
+<div class="rectangle-12">
+  <div class="div6">Регистрация</div>
+
+  <form id="registrationForm" action="/register" method="post">
+    <div class="form-section">
+      <label for="phone" class="div10">Номер телефона</label>
+      <div class="input-field">
+        <input type="tel" id="phone" name="phone" placeholder="Введите номер телефона" required
+               style="width: 100%; height: 100%; border: none; padding: 0 10px; font-size: 18px; border-radius: 7px;">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label for="password" class="div4">Придумайте пароль</label>
+      <div class="input-field">
+        <input type="password" id="password" name="password" placeholder="Введите пароль" required
+               style="width: 100%; height: 100%; border: none; padding: 0 10px; font-size: 18px; border-radius: 7px;">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <label for="confirmPassword" class="div2">Повторите пароль</label>
+      <div class="input-field">
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Повторите пароль" required
+               style="width: 100%; height: 100%; border: none; padding: 0 10px; font-size: 18px; border-radius: 7px;">
+      </div>
+    </div>
+
+    <div class="radio-container">
+      <input type="radio" id="isBuyer" name="role" value="buyer">
+      <label for="isBuyer" class="radio-label">Я покупатель</label>
+    </div>
+
+    <div class="radio-container1">
+      <input type="radio" id="isAssembler" name="role" value="assembler">
+      <label for="isAssembler" class="radio-label">Я сборщик</label>
+    </div>
+
+
+    <button type="submit" class="div7">
+      <span class="div8">Регистрация</span>
+    </button>
+  </form>
+</div>
+
+<script src="/static/registration.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <title>Главная</title>
+  <style>
+    /* Сброс стилей и базовые настройки */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Alice, sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    body {
+      background-color: #222;
+      color: #fff;
+      overflow: hidden; /* Отключаем прокрутку всей страницы */
+    }
+
+    /* Общий контейнер */
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh; /* Высота на весь экран */
+      padding: 20px; /* Отступ от края страницы */
+    }
+
+    /* Шапка */
+    .header {
+      display: flex;
+      justify-content: space-between; /* Кнопки по краям */
+      align-items: center;
+      padding-bottom: 20px; /* Отступ вниз */
+      flex-shrink: 0; /* Шапка не сжимается */
+    }
+
+    /* Кнопка корзины */
+    #cart {
+      background-color: #000;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 100px;
+      height: 40px;
+    }
+
+    /* Кнопка авторизации или личного кабинета */
+    .header-code, .header-title {
+      background-color: #000;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      transition: border 0.3s ease; /* Плавный переход для рамки */
+      border: 2px solid transparent; /* Исходная прозрачная рамка */
+    }
+
+    .header-code {
+      width: 100px;
+    }
+
+    .header-title {
+      white-space: nowrap;
+    }
+
+    /* Эффект подсветки по периметру */
+    .header-code:hover, .header-title:hover {
+      border-color: #d3d3d3; /* Светло-серая рамка при наведении */
+      cursor: pointer; /* Курсор указывает на кнопки */
+    }
+
+    /* Основной контент */
+    .content {
+      display: flex;
+      flex: 1; /* Заполняет оставшееся пространство */
+      gap: 20px; /* Отступ между боковой панелью и основной частью */
+      overflow: hidden; /* Отключаем горизонтальную прокрутку */
+    }
+
+    /* Боковая панель */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      background-color: #121212;
+      width: 100px; /* Ширина боковой панели */
+      padding: 20px 0;
+      border-radius: 10px; /* Скругление углов */
+      overflow-y: auto; /* Вертикальная прокрутка */
+      scrollbar-width: none; /* Скрываем скроллбар в Firefox */
+    }
+
+    /* Скрытие скроллбара для Chrome и Safari */
+    .sidebar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .sidebar img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      transition: border 0.3s ease; /* Плавный переход для рамки */
+      border: 2px solid transparent; /* Исходная прозрачная рамка */
+      border-radius: 10px; /* Скругление углов иконки */
+    }
+
+    /* Эффект подсветки по периметру для иконок */
+    .sidebar img:hover {
+      border-color: #d3d3d3; /* Светло-серая рамка при наведении */
+      cursor: pointer; /* Курсор указывает на иконку */
+    }
+
+    /* Основная область */
+    .main-content {
+      flex: 1; /* Заполняет оставшееся пространство */
+      display: flex;
+      flex-direction: column;
+      gap: 10px; /* Отступы между content-box */
+      border-radius: 10px;
+      overflow-y: auto; /* Включаем прокрутку для всего контейнера */
+      scrollbar-width: none;
+      max-height: calc(100vh - 120px); /* Высота ограничена (100vh - высота шапки + отступы) */
+      height: auto; /* Автоматическая высота, чтобы контейнер расширялся по мере необходимости */
+    }
+
+    .content-box {
+      background-color: #121212;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: row; /* Располагаем элементы в строку */
+      align-items: center; /* Центрируем элементы по вертикали */
+      height: 200px; /* Фиксированная высота */
+      padding: 20px;
+      gap: 15px; /* Отступ между изображением и текстом */
+      box-sizing: border-box;
+    }
+
+    .content-image {
+      width: 160px; /* Фиксированная ширина для картинки */
+      height: 160px; /* Фиксированная высота для картинки */
+      object-fit: cover; /* Обеспечиваем обрезку и масштабирование изображения */
+    }
+
+    .content-text {
+      flex: 1; /* Занимает оставшееся пространство */
+      color: #fff;
+      font-size: 16px;
+      line-height: 1.5; /* Расстояние между строками */
+      text-align: left;
+      overflow: hidden; /* Обрезаем текст, если он не помещается */
+      text-overflow: ellipsis; /* Добавляем многоточие, если текст длинный */
+    }
+
+    .add-button {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 15px 30px; /* Увеличиваем размеры кнопки */
+      border-radius: 10px; /* Больше скругление */
+      font-size: 18px; /* Увеличиваем размер текста на кнопке */
+      font-weight: normal; /* Делаем текст жирным */
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-left: auto; /* Сдвигаем кнопку вправо */
+    }
+
+    .add-button:hover {
+      background-color: #ffffff;
+    }
+
+  </style>
+</head>
+<body>
+<!-- Основной контейнер -->
+<div class="main-container">
+  <!-- Шапка -->
+  <div class="header">
+    <!-- Кнопка корзины -->
+    <div id="cart" class="header-code"><span id="cart-total">0</span></div>
+
+    <!-- Кнопка авторизации или личного кабинета -->
+    <span id="auth-button" class="header-title" th:data-authenticated="${authenticated}">
+      <button class="header-title">
+        <span th:text="${authenticated ? 'Личный кабинет' : 'Авторизация'}"></span>
+      </button>
+    </span>
+  </div>
+
+  <!-- Контент -->
+  <div class="content">
+    <!-- Боковая панель -->
+    <div class="sidebar">
+      <img src="../static/free-icon-cpu-984493-1-10.png" alt="CPU" data-category="cpu" />
+      <img src="../static/free-icon-motherboard-2729189-10.png" alt="Motherboard" data-category="motherboard" />
+      <img src="../static/free-icon-gpu-8245312-10.png" alt="GPU" data-category="gpu" />
+      <img src="../static/free-icon-ram-3385711-10.png" alt="RAM" data-category="ram" />
+      <img src="../static/free-icon-power-supply-15278749-10.png" alt="PSU" data-category="psu" />
+      <img src="../static/free-icon-harddisk-1606079-10.png" alt="HDD" data-category="hdd" />
+      <img src="../static/free-icon-ssd-2764257-10.png" alt="SSD" data-category="ssd" />
+      <img src="../static/free-icon-fan-2422425-10.png" alt="Fan" data-category="fan" />
+      <img src="../static/free-icon-case-2422413-10.png" alt="Case" data-category="case" />
+    </div>
+
+    <!-- Основная область -->
+    <div class="main-content">
+      <!-- Контент будет загружен сюда -->
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.2/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <script src="/static/main.js"></script>
+
+</body>
+</html>

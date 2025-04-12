@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <title>Данные</title>
+  <style>
+    a,
+    button,
+    input,
+    select,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Alice, sans-serif;
+      font-weight: 400;
+      font-style: normal;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    menu, ol, ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Общий стиль страницы */
+    body {
+      font-family: "Alice-Regular", sans-serif; /* Используем ваш шрифт */
+      background-color: #222222;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 30px;
+    }
+
+    /* Навигационная панель */
+    .nav-container {
+      background: #121212;
+      border-radius: 7px;
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+    }
+
+    .nav-item {
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 20px;
+      font-weight: 400;
+      color: white;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav-item:hover {
+      background-color: #444;
+      color: #00bfff;
+    }
+
+    .nav-item.exit {
+      background-color: #000;
+    }
+
+    /* Основной контейнер */
+    .container {
+      background: #121212;
+      border-radius: 7px;
+      width: 100%;
+      max-width: 1200px;
+      padding: 30px; /* Увеличен внутренний отступ */
+      display: flex;
+      flex-direction: column;
+      gap: 30px; /* Увеличен интервал между элементами */
+      height: 700px; /* Увеличена высота контейнера */
+      margin-bottom: 30px; /* Добавлен отступ снизу */
+    }
+
+    /* Блок с формой */
+    .form-block {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px; /* Увеличен интервал между элементами формы */
+    }
+
+    .form-item {
+      flex: 1 1 calc(50% - 30px); /* Увеличен отступ для более широких блоков */
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* Увеличен промежуток между label и input */
+    }
+
+    .form-item input {
+      background: #ffffff;
+      border-radius: 7px;
+      height: 40px; /* Увеличена высота поля ввода */
+      padding: 0 12px; /* Увеличен внутренний отступ */
+      font-size: 18px; /* Увеличен размер шрифта */
+      color: black;
+    }
+
+    .form-item label {
+      font-size: 20px; /* Увеличен размер шрифта для label */
+      font-weight: 400;
+    }
+
+    /* Кнопка "Сохранить" */
+    .save-btn {
+      align-self: flex-end;
+      background: #ffffff;
+      border-radius: 7px;
+      padding: 15px 30px; /* Увеличены отступы */
+      color: #000;
+      font-size: 22px; /* Увеличен размер шрифта */
+      cursor: pointer;
+    }
+    
+  </style>
+</head>
+<body>
+
+  <!-- Навигационная панель -->
+  <div class="nav-container">
+    <div class="nav-item">Персональные данные</div>
+    <div class="nav-item">Заказы</div>
+    <div class="nav-item">Сборки</div>
+    <div class="nav-item">Уведомления</div>
+    <div class="nav-item exit">Выход</div>
+  </div>
+
+  <div class="container">
+    <!-- Блок формы -->
+    <div class="form-block">
+      <div class="form-item">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Введите email">
+      </div>
+      
+      <div class="form-item">
+        <label for="password">Новый пароль</label>
+        <input type="password" id="password" placeholder="Введите новый пароль">
+      </div>
+      <div class="form-item">
+        <label for="phone">Номер телефона</label>
+        <input type="text" id="phone" placeholder="Введите номер телефона">
+      </div>
+      <div class="form-item">
+        <label for="confirm-password">Подтвердите пароль</label>
+        <input type="password" id="confirm-password" placeholder="Подтвердите пароль">
+      </div>
+    </div>
+    <button class="save-btn">Сохранить</button>
+  </div>
+  <script src="/user_profile.js"></script>
+</body>
+</html>

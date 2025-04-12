@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <title>Корзина</title>
+  <style>
+    /* Общие стили */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Alice, sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #222222;
+      color: #ffffff;
+    }
+
+    /* Основной контейнер */
+    .div {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Центральный блок с прокруткой */
+    .frame-1 {
+      width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px; /* Отступы между content-box */
+      border-radius: 10px;
+      overflow-y: auto; /* Включаем прокрутку для всего контейнера */
+      scrollbar-width: none;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      height: calc(100% - 40px);
+      margin-left: 20px;
+    }
+
+    .product-box {
+      background-color: #121212;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: row; /* Располагаем элементы в строку */
+      align-items: center; /* Центрируем элементы по вертикали */
+      height: 200px; /* Фиксированная высота */
+      padding: 20px;
+      gap: 15px; /* Отступ между изображением и текстом */
+      box-sizing: border-box;
+    }
+
+    .remove-button {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 15px 30px; /* Увеличиваем размеры кнопки */
+      border-radius: 10px; /* Больше скругление */
+      font-size: 18px; /* Увеличиваем размер текста на кнопке */
+      font-weight: normal; /* Делаем текст жирным */
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-left: auto; /* Сдвигаем кнопку вправо */
+    }
+
+    .remove-button:hover {
+      background-color: #ffffff;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quantity-controls button {
+      background-color: #000;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .quantity-controls button:hover {
+      background-color: #fff;
+      color: #000;
+    }
+
+    .quantity {
+      font-size: 18px;
+      min-width: 30px;
+      text-align: center;
+    }
+
+    .content-image {
+      width: 160px; /* Фиксированная ширина для картинки */
+      height: 160px; /* Фиксированная высота для картинки */
+      object-fit: cover; /* Обеспечиваем обрезку и масштабирование изображения */
+    }
+
+    .content-text {
+      flex: 1; /* Занимает оставшееся пространство */
+      color: #fff;
+      font-size: 16px;
+      line-height: 1.5; /* Расстояние между строками */
+      text-align: left;
+      overflow: hidden; /* Обрезаем текст, если он не помещается */
+      text-overflow: ellipsis; /* Добавляем многоточие, если текст длинный */
+    }
+
+    /* Правая колонка */
+    .right-column {
+      display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+      background: #121212;
+
+      top: 20px;
+      bottom: 20px;
+      border-radius: 10px;
+  position: absolute; /* Блок остаётся на месте относительно родителя */
+  right: 20px; /* Расстояние от левого края страницы */
+      height: calc(100% - 40px);
+    }
+
+    .frame-3 {
+      width: 166px;
+      height: 54px;
+      background: #000;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      text-align: center;
+    }
+
+    .frame-5 {
+      width: 166px;
+      height: 54px;
+      background: #000;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .frame-4 {
+      width: 166px;
+      height: 54px;
+      background: #000;
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      text-align: center;
+      margin-top: auto; 
+    }
+    .frame-4:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+
+    .frame-5:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+      cursor: pointer;
+    }
+
+  </style>
+  <title>Page Layout</title>
+</head>
+<body>
+  <div class="div">
+    <!-- Центральный блок с прокруткой -->
+    <div class="frame-1">
+
+    </div>
+
+    <!-- Правая колонка -->
+    <div class="right-column">
+      <div class="frame-3">0</div>
+      <div class="frame-5">Сохранить сборку</div>
+      <div class="frame-4">Заказать</div>
+    </div>
+  </div>
+  <script src="/static/cart.js"></script>
+</body>
+</html>

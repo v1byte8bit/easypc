@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <title>Авторизация</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Alice', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: #222;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .container {
+      background: #121212;
+      border-radius: 10px;
+      width: 839px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      font-size: 40px;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .form-group {
+      width: 100%;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    label {
+      font-size: 18px;
+      margin-bottom: 5px;
+      text-align: left;
+      width: 513px;
+    }
+
+    input {
+      width: 513px;
+      height: 64px;
+      border-radius: 7px;
+      border: none;
+      padding: 0 10px;
+      font-size: 18px;
+      background: #b9b9b9;
+      color: #000;
+    }
+
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 8px #d3d3d3;
+    }
+
+    .button {
+      width: 205px;
+      height: 60px;
+      border-radius: 7px;
+      background: #000;
+      border: 2px solid transparent;
+      color: #fff;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #444;
+      border-color: #d3d3d3;
+      box-shadow: 0 0 8px #d3d3d3;
+    }
+
+    .link {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #87CEEB;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .link:hover {
+      color: #ffffff;
+    }
+
+    .error {
+      color: #ff4d4d;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">Авторизация</div>
+
+  <form id="loginForm" method="POST" action="/api/login">
+    <div class="form-group">
+      <label for="phone">Номер телефона</label>
+      <input type="text" id="phone" name="phone" placeholder="Введите номер телефона" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Пароль</label>
+      <input type="password" id="password" name="password" placeholder="Введите пароль" required>
+    </div>
+    <div class="error" id="error"></div>
+    <button type="submit" class="button">Войти</button>
+  </form>
+
+  <div class="link" onclick="window.location.href='/register'">Ещё не зарегистрированы?</div>
+</div>
+
+<script src="/static/login.js"></script>
+</body>
+</html>

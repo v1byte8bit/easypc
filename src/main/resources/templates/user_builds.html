@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
+  <title>Мои сборки</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Alice, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: #222222;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 30px;
+    }
+
+    /* Навигация */
+    .nav-container {
+      background: #121212;
+      border-radius: 7px;
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+    }
+
+    .nav-item {
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 20px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav-item:hover {
+      background-color: #444;
+      color: #00bfff;
+    }
+
+    /* Основной контейнер */
+    main {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    .content-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 10px;
+      border-radius: 7px;
+      scrollbar-width: none;
+    }
+
+    /* Блок сборки */
+    .build-block {
+      background-color: #121212;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      cursor: pointer;
+    }
+
+    /* Блок с картинкой, названием и датой */
+    .build-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+
+    /* Картинка сборки */
+    .build-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    /* Данные сборки */
+    .build-details {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-right: 20px;
+    }
+
+    /* Название сборки */
+    .build-name {
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    /* Дата создания */
+    .build-date {
+      font-size: 16px;
+      color: #bbb;
+      font-weight: 400;
+    }
+
+    /* Цена */
+    .build-price {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      margin-left: auto;
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    /* Аккордеон с товарами */
+    .accordion-content {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      padding-top: 10px;
+    }
+
+    /* Товар в сборке */
+    .build-item-block {
+      background-color: #000000;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+    }
+
+    /* Картинка товара */
+    .img_item {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    /* Данные товара */
+    .item-details {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+    }
+
+    /* Название товара */
+    .item-name {
+      font-size: 16px;
+    }
+
+    /* Категория товара */
+    .item-category {
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    /* Блок с ценой */
+    .item-action {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      margin-left: auto;
+    }
+
+    /* Цена товара */
+    .item-price {
+      font-size: 18px;
+    }
+
+    .item-quantity {
+      font-size: 18px;
+    }
+    .build-column {
+      display: flex;
+      flex-direction: column;
+      margin-left: auto;
+    }
+
+    .build-action {
+      display: flex;
+      align-items: center;  /* Выравнивание по центру */
+      gap: 10px;
+      flex-direction: row;
+    }
+
+    /* Устанавливаем размер иконок */
+    .build-action img {
+      width: 24px; /* Можно подогнать под нужный размер */
+      height: 24px;
+      cursor: pointer; /* Курсор указывает, что это кнопка */
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    /* Эффект при наведении */
+    .build-action img:hover {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+
+    /* Фильтр для перекраски иконок в белый (если нужно) */
+    .build-action .delete-btn {
+      filter: brightness(0) invert(1); /* Делаем иконку белой */
+    }
+
+    .build-action .to-cart-btn {
+      filter: brightness(0) invert(1); /* Делаем иконку белой */
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- Навигация -->
+<div class="nav-container">
+  <div class="nav-item">Персональные данные</div>
+  <div class="nav-item">Заказы</div>
+  <div class="nav-item">Сборки</div>
+  <div class="nav-item">Уведомления</div>
+  <div class="nav-item exit">Выход</div>
+</div>
+
+<!-- Основной контент -->
+<main>
+  <div class="content-container"></div>
+</main>
+
+<script src="/static/user_builds.js"></script>
+</body>
+</html>
