@@ -6,13 +6,13 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-@Controller
+@Component
 public class OneTwoThreeProductParser implements ProductParser {
     @Override
     public ProductData parse(Source source, String category) {
@@ -65,6 +65,15 @@ public class OneTwoThreeProductParser implements ProductParser {
                         "Чипсет (AMD)","chipset",
                         "Поддержка оперативной памяти","ram_type",
                         "Количество слотов M.2","m2_count"
+                ),
+                "fan", Map.of(
+                        "Совместимые разъёмы CPU", "socket"
+                ),
+                "hdd", Map.of(
+                        "Ёмкость", "hdd_volume"
+                ),
+                "ssd", Map.of(
+                        "Объём", "ssd_volume"
                 )
         );
 

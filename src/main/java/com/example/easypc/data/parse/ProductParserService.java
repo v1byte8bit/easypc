@@ -25,6 +25,7 @@ public class ProductParserService {
     @Autowired
     private SourceRepository sourceRepository;
 
+    @Autowired
     private final List<ProductParser> parsers;
 
     /*
