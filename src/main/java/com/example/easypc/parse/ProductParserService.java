@@ -1,7 +1,8 @@
-package com.example.easypc.data.parse;
+package com.example.easypc.parse;
 
 import com.example.easypc.data.entity.Source;
 import com.example.easypc.data.repository.SourceRepository;
+import com.example.easypc.filter.ProductComparator;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,10 @@ public class ProductParserService {
 
     @Autowired
     private final List<ProductParser> parsers;
+
+    @Autowired
+    private ProductComparator productComparator;
+
 
     /*
         Каждый запрос на парсинг запускается в отдельном потоке с помощью ExecutorService и CompletableFuture

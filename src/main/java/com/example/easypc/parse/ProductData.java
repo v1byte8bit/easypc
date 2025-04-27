@@ -1,15 +1,15 @@
-package com.example.easypc.data.parse;
+package com.example.easypc.parse;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Map;
 
-@Getter
-@Setter
+@Data
 public class ProductData implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -36,4 +36,3 @@ public class ProductData implements Serializable {
         this.characteristics = characteristics;
     }
 }
-

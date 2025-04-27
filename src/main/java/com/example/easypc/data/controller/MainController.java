@@ -1,6 +1,6 @@
 package com.example.easypc.data.controller;
 
-import com.example.easypc.data.parse.ProductParserService;
+import com.example.easypc.parse.ProductParserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

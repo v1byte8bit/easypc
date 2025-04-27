@@ -1,6 +1,6 @@
 package com.example.easypc.websocket;
 
-import com.example.easypc.data.parse.ProductData;
+import com.example.easypc.parse.ProductData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;

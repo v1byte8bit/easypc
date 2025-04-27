@@ -1,4 +1,4 @@
-package com.example.easypc.data.parse;
+package com.example.easypc.parse;
 
 import com.example.easypc.data.entity.Source;
 import org.openqa.selenium.*;
@@ -26,7 +26,7 @@ public class CitilinkProductParser implements ProductParser {
             throw new RuntimeException("ChromeDriver not found at " + chromeDriverPath);
         }
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Безголовый режим
+        options.addArguments("--headless");
         this.driver = new ChromeDriver(options);
     }
 
@@ -37,10 +37,11 @@ public class CitilinkProductParser implements ProductParser {
             driver.get(url);
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             String productName = driver.findElement(By.cssSelector("div[data-meta-name='ProductHeaderLayout__title'] h1")).getText();
+            productName = cleanName(productName);
             String productPrice = driver.findElement(By.cssSelector("span[class*='MainPriceNumber']")).getText();
             String imageUrl = driver.findElement(By.cssSelector("meta[property='og:image']")).getAttribute("content");
             Long urlId = Long.valueOf(source.getId());
-            Map<String, String> characteristics = extractCharacteristics(category,url);
+            Map<String, String> characteristics = extractCharacteristics(category, url);
 
             return new ProductData(productName, productPrice, category, imageUrl, urlId, characteristics);
         } catch (Exception e) {
@@ -58,7 +59,9 @@ public class CitilinkProductParser implements ProductParser {
         Map<String, Map<String, String>> categoryMappings = Map.of(
                 "cpu", Map.of(
                         "Сокет", "socket",
-                        "Тепловыделение","tdp"
+                        "Тепловыделение", "tdp",
+                        "Встроенное графическое ядро", "graph",
+                        "Частота", "frequency"
                 ),
                 "gpu", Map.of(
                         "Объем видеопамяти", "memory_size",
@@ -77,8 +80,8 @@ public class CitilinkProductParser implements ProductParser {
                 "motherboard", Map.of(
                         "Сокет", "socket",
                         "Чипсет", "chipset",
-                        "Тип памяти","ram_type",
-                        "Разъемов M.2","m2_count"
+                        "Тип памяти", "ram_type",
+                        "Разъемов M.2", "m2_count"
                 ),
                 "fan", Map.of(
                         "Совместимые разъёмы CPU", "socket"
@@ -96,41 +99,41 @@ public class CitilinkProductParser implements ProductParser {
 
             String productId = extractProductIdFromUrl(url);
             if (productId == null || productId.isEmpty()) {
-                System.out.println("Не удалось извлечь productId из URL");
                 return result;
             }
 
             //GraphQL-запрос
-        String query = """
-            {
-                product(filter: {id: "%s"}) {
-                    propertiesGroup {
-                        name
-                        properties {
-                            name
-                            value
-                        }
-                    }
-                 }
-            }
-        """.formatted(productId).replace("\n", "");
-        //Скрипт для асинхронного запроса
-        String script = """
-            const callback = arguments[arguments.length - 1];
-            fetch('https://www.citilink.ru/graphql/', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ query: '%s' }) 
-            })
-            .then(res => res.json())
-            .then(data => callback(data))
-            .catch(err => callback({error: err.message}));
-        """.formatted(query);
-        Object response = ((JavascriptExecutor) driver).executeAsyncScript(script);
+            String query = """
+                     {
+                        product(filter: {id: "%s"}) {
+                            propertiesGroup {
+                                name
+                                properties {
+                                    name
+                                    value
+                                }
+                            }
+                         }
+                     }
+                    """.formatted(productId).replace("\n", "");
+            //Скрипт для асинхронного запроса
+            String script = """
+                        const callback = arguments[arguments.length - 1];
+                        fetch('https://www.citilink.ru/graphql/', { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ query: '%s' }) 
+                        })
+                        .then(res => res.json())
+                        .then(data => callback(data))
+                        .catch(err => callback({error: err.message}));
+                    """.formatted(query);
+            Object response = ((JavascriptExecutor) driver).executeAsyncScript(script);
             if (response instanceof Map<?, ?> json && json.containsKey("data")) {
                 Map<?, ?> data = (Map<?, ?>) json.get("data");
                 Map<?, ?> product = (Map<?, ?>) data.get("product");
                 List<?> propertiesGroups = (List<?>) product.get("propertiesGroup");
+
                 for (Object groupObj : propertiesGroups) {
                     Map<?, ?> group = (Map<?, ?>) groupObj;
                     List<?> properties = (List<?>) group.get("properties");
@@ -141,12 +144,23 @@ public class CitilinkProductParser implements ProductParser {
                         String value = (String) prop.get("value");
 
                         if (mapping.containsKey(key)) {
-                            result.put(mapping.get(key), value);
+                            String mappedKey = mapping.get(key);
+                            // Нормализация значений
+                            if ("frequency".equals(mappedKey)) {
+                                String normalizedFrequency = normalizeFrequencyToMHz(value);
+                                if (normalizedFrequency != null) {
+                                    value = normalizedFrequency.toString();
+                                }
+                            }
+                            if ("graph".equals(mappedKey)) {
+                                value = normalizeGraphicsCore(value);
+                            }
+                            result.put(mappedKey, value);
                         }
                     }
                 }
-            } else {
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,4 +178,37 @@ public class CitilinkProductParser implements ProductParser {
 
         return productId;
     }
+
+    private String normalizeGraphicsCore(String value) {
+        if (value == null) return "нет";
+        String lower = value.toLowerCase();
+        if (lower.contains("нет") || lower.contains("отсутствует") || lower.contains("n/a") || lower.contains("без")) {
+            return "нет";
+        }
+        return value.trim();
+    }
+
+    private String normalizeFrequencyToMHz(String text) {
+        if (text == null) return null;
+
+        text = text.toLowerCase().replace(",", ".").replaceAll("[^0-9.]", " ");
+        Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)?)");
+        Matcher matcher = pattern.matcher(text);
+        if (matcher.find()) {
+            double value = Double.parseDouble(matcher.group(1));
+            if (value <= 10) {
+                return Math.round(value * 1000) + " Мгц";
+            } else {
+                return Math.round(value) + " Мгц";
+            }
+        }
+        return null;
+    }
+
+    private String cleanName(String name) {
+        if (name == null) return null;
+        return name.replaceAll("\\s*\\[[^]]*\\]", "").trim();
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package com.example.easypc.data.parse;
+package com.example.easypc.parse;
 
 import com.example.easypc.data.entity.Source;
 

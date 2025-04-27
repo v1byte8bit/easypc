@@ -1,6 +1,6 @@
 package com.example.easypc.rabbitmq;
 
-import com.example.easypc.data.parse.ProductData;
+import com.example.easypc.parse.ProductData;
 import com.example.easypc.websocket.WebSocketSender;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;

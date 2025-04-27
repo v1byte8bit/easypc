@@ -1,4 +1,4 @@
-package com.example.easypc.data.parse;
+package com.example.easypc.parse;
 
 import com.example.easypc.data.entity.Source;
 import org.jsoup.Connection;
@@ -48,7 +48,9 @@ public class OneTwoThreeProductParser implements ProductParser {
         Map<String, Map<String, String>> categoryMappings = Map.of(
                 "cpu", Map.of(
                         "Socket", "socket",
-                        "Типичная рассеиваемая мощность (TDP)", "tdp"
+                        "Типичная рассеиваемая мощность (TDP)", "tdp",
+                        "Наличие встроенного графического ядра", "graph",
+                        "Рабочая частота процессора", "frequency"
                 ),
                 "psu", Map.of(
                         "Мощность", "power"
@@ -62,9 +64,9 @@ public class OneTwoThreeProductParser implements ProductParser {
                 "motherboard", Map.of(
                         "Разъем CPU", "socket",
                         "Чипсет (Intel)", "chipset",
-                        "Чипсет (AMD)","chipset",
-                        "Поддержка оперативной памяти","ram_type",
-                        "Количество слотов M.2","m2_count"
+                        "Чипсет (AMD)", "chipset",
+                        "Поддержка оперативной памяти", "ram_type",
+                        "Количество слотов M.2", "m2_count"
                 ),
                 "fan", Map.of(
                         "Совместимые разъёмы CPU", "socket"
@@ -78,7 +80,6 @@ public class OneTwoThreeProductParser implements ProductParser {
         );
 
         Map<String, String> mapping = categoryMappings.getOrDefault(category, Map.of());
-
         Map<String, String> characteristics = new HashMap<>();
         Elements lines = doc.select("#tab-char .line");
 
@@ -91,11 +92,32 @@ public class OneTwoThreeProductParser implements ProductParser {
                 if (mapping.containsKey(key)) {
                     String normalizedKey = mapping.get(key);
                     String value = valueElement.text().trim();
+                    if (normalizedKey.equals("socket")) {
+                        value = normalizeSocket(value);
+                    }
+                    if (normalizedKey.equals("tdp")) {
+                        value = String.valueOf(normalizePower(value));
+                    }
                     characteristics.put(normalizedKey, value);
                 }
             }
         }
-
         return characteristics;
+    }
+
+    public String normalizeSocket(String socket) {
+        if (socket == null) return null;
+        socket = socket.replace("AMD ", "");
+        return socket.trim();
+    }
+
+    private Integer normalizePower(String text) {
+        if (text == null) return null;
+        text = text.replaceAll("[^0-9]", "");
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

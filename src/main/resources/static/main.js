@@ -8,32 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const renderedProducts = new Map(); // Храним товары по их urlId
   let currentCategory = null; // Текущая выбранная категория
 
-  // Функция для сохранения товара в localStorage
-  function saveProductToLocalStorage(product) {
-    let savedProducts = JSON.parse(localStorage.getItem("products")) || [];
-
-    // Находим товар в хранилище
-    const existingIndex = savedProducts.findIndex(p => p.urlId === product.urlId);
-
-    if (existingIndex !== -1) {
-      savedProducts[existingIndex] = product; // Обновляем товар
-    } else {
-      savedProducts.push(product); // Добавляем, если его нет
-    }
-
-    localStorage.setItem("products", JSON.stringify(savedProducts));
-  }
-
-  // Функция загрузки товаров из localStorage
-  function loadProductsFromStorage() {
-    const savedProducts = JSON.parse(localStorage.getItem("products")) || [];
-    savedProducts.forEach(product => {
-      if (product.category === currentCategory) {
-        addOrUpdateProductOnPage(product);
-      }
-    });
-  }
-
   // Функция добавления/обновления товара на странице
   function addOrUpdateProductOnPage(product) {
     if (product.category !== currentCategory) return; // Если категория не совпадает, не отображаем товар
@@ -134,29 +108,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Настройка WebSocket для получения продуктов
+  let stompClient = null;
+  let currentSubscription = null;
+
   function setupWebSocket() {
     const socket = new SockJS('/websocket-endpoint');
-    const stompClient = Stomp.over(socket);
+    stompClient = Stomp.over(socket);
 
     stompClient.connect({}, function(frame) {
       console.log('Connected to WebSocket: ' + frame);
-
-      stompClient.subscribe('/topic/products', function(message) {
-        const product = JSON.parse(message.body);
-        console.log("Получен товар по WebSocket:", product);
-        if (product.category === currentCategory) {
-          if (!renderedProducts.has(product.urlId)) {
-            addOrUpdateProductOnPage(product);
-            saveProductToLocalStorage(product);
-          } else {
-            // Если товар уже на странице, только обновляем его
-            addOrUpdateProductOnPage(product);
-          }
-        }
-      });
+      subscribeToCategory(currentCategory); // подписываемся сразу на текущую категорию
     }, function(error) {
       console.error("Ошибка подключения WebSocket:", error);
-      setTimeout(setupWebSocket, 5000); // Попытка переподключиться через 5 секунд
+      setTimeout(setupWebSocket, 5000); // Переподключение
+    });
+  }
+
+  function subscribeToCategory(category) {
+    if (currentSubscription) {
+      currentSubscription.unsubscribe(); // Отписка от старой категории
+    }
+
+    if (!category) return; // Нет выбранной категории — нечего подписывать
+
+    currentSubscription = stompClient.subscribe('/topic/products/' + category, function(message) {
+      const productList = JSON.parse(message.body);
+      console.log("Получен список товаров по WebSocket:", productList);
+
+      productList.forEach(product => {
+        if (!renderedProducts.has(product.urlId)) {
+          addOrUpdateProductOnPage(product);
+          saveProductToLocalStorage(product);
+        } else {
+          addOrUpdateProductOnPage(product);
+        }
+      });
     });
   }
 
@@ -166,12 +152,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const category = image.dataset.category;
       if (category !== currentCategory) {
         currentCategory = category;
-        renderedProducts.clear(); // Очищаем ранее отображенные товары
-        mainContent.innerHTML = ""; // Очищаем main-content
-        fetchAndRenderProducts(category); // Загружаем товары для выбранной категории
+        renderedProducts.clear();
+        mainContent.innerHTML = "";
+
+        subscribeToCategory(category); // <--- ПЕРЕПОДПИСКА ПО НОВОЙ КАТЕГОРИИ
+
+        fetchAndRenderProducts(category); // Загрузка по новой категории
       }
     });
   });
+
 
   function fetchAndRenderProducts(category) {
     fetch("/parse?category=" + category, { method: "POST" })
