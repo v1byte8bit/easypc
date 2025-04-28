@@ -1,5 +1,7 @@
 package com.example.easypc.data.controller;
 
+import com.example.easypc.filter.ProductPriceComparator;
+import com.example.easypc.parse.ProductData;
 import com.example.easypc.parse.ProductParserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -20,6 +23,9 @@ public class MainController {
 
     @Autowired
     private ProductParserService productParserService;
+
+    @Autowired
+    private ProductPriceComparator productPriceComparator;
 
     @GetMapping("/main")
     public String mainPage(Model model, Authentication authentication) {
@@ -33,18 +39,18 @@ public class MainController {
     }
 
     @PostMapping("/parse")
-    public ResponseEntity<Map<String, String>> startParsing(@RequestParam String category) {
+    public ResponseEntity<Void> startParsing(@RequestParam String category) {
         try {
-            //Парсинг для переданной категории
             productParserService.parseAndSendData(category);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Запущен парсинг для категории: " + category);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("message", "Ошибка при запуске парсинга: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductData>> getProducts(@RequestParam String category) {
+        List<ProductData> products = productPriceComparator.getProductsByCategory(category);
+        return ResponseEntity.ok(products);
     }
 }

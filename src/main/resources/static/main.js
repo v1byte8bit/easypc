@@ -3,17 +3,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const authButton = document.getElementById("auth-button");
   const mainContent = document.querySelector(".main-content");
   const cartTotal = document.getElementById("cart-total");
-  const sidebarImages = document.querySelectorAll(".sidebar img"); // Все картинки в sidebar
+  const sidebarImages = document.querySelectorAll(".sidebar img");
+  const loadingSpinner = document.getElementById('loading-spinner');
+  const productsContainer = document.getElementById('products-container');
 
   const renderedProducts = new Map(); // Храним товары по их urlId
   let currentCategory = null; // Текущая выбранная категория
 
+  function showSpinner() {
+    loadingSpinner.style.display = 'block';
+  }
+
+  function hideSpinner() {
+    loadingSpinner.style.display = 'none';
+  }
+
+  function clearProducts() {
+    productsContainer.innerHTML = '';
+  }
+
+
   // Функция добавления/обновления товара на странице
   function addOrUpdateProductOnPage(product) {
-    if (product.category !== currentCategory) return; // Если категория не совпадает, не отображаем товар
+    if (product.category !== currentCategory) return;
 
     if (renderedProducts.has(product.urlId)) {
-      // Если товар уже есть, обновляем только цену
       const existingProduct = renderedProducts.get(product.urlId);
       const priceElement = existingProduct.querySelector(".product-price");
       if (priceElement) {
@@ -22,35 +36,40 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Создаем новый элемент товара
     const contentBox = document.createElement("div");
     const characteristicsHtml = Object.entries(product.characteristics || {})
         .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
-        .join(""); // Если нет характеристик, будет пустая строка
+        .join("");
 
-    contentBox.className = "content-box";
+    contentBox.className = "content-box fade-in"; // ← здесь!
+
     contentBox.setAttribute("data-id", product.urlId);
-
     contentBox.innerHTML = `
-      <img src="${product.img}" alt="${product.name}" class="content-image" />
-      <div class="content-text">
-        <h3>${product.name || "Не указано"}</h3>
-        <p class="product-price">Цена: ₽${product.price || "Не указана"}</p>
-        <div class="product-characteristics">
-      ${characteristicsHtml}
-    </div>
+    <img src="${product.img}" alt="${product.name}" class="content-image" />
+    <div class="content-text">
+      <h3>${product.name || "Не указано"}</h3>
+      <p class="product-price">Цена: ₽${product.price || "Не указана"}</p>
+      <div class="product-characteristics">
+        ${characteristicsHtml}
       </div>
-      <button class="add-button" data-id="${product.urlId}">В корзину</button>
-    `;
+    </div>
+    <button class="add-button" data-id="${product.urlId}">В корзину</button>
+  `;
 
     const addButton = contentBox.querySelector(".add-button");
     addButton.addEventListener("click", () => {
       addToCart(product);
     });
 
-    mainContent.appendChild(contentBox);
-    renderedProducts.set(product.urlId, contentBox); // Запоминаем товар
+    productsContainer.appendChild(contentBox);
+    renderedProducts.set(product.urlId, contentBox);
+
+    // Анимация появления
+    setTimeout(() => {
+      contentBox.classList.add("show");
+    }, 100);
   }
+
 
   // Функция добавления товара в корзину
   function addToCart(product) {
@@ -117,33 +136,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     stompClient.connect({}, function(frame) {
       console.log('Connected to WebSocket: ' + frame);
-      subscribeToCategory(currentCategory); // подписываемся сразу на текущую категорию
     }, function(error) {
       console.error("Ошибка подключения WebSocket:", error);
       setTimeout(setupWebSocket, 5000); // Переподключение
     });
   }
 
+
   function subscribeToCategory(category) {
     if (currentSubscription) {
       currentSubscription.unsubscribe(); // Отписка от старой категории
     }
 
-    if (!category) return; // Нет выбранной категории — нечего подписывать
+    if (!category) return;
 
     currentSubscription = stompClient.subscribe('/topic/products/' + category, function(message) {
       const productList = JSON.parse(message.body);
       console.log("Получен список товаров по WebSocket:", productList);
 
-      productList.forEach(product => {
-        if (!renderedProducts.has(product.urlId)) {
-          addOrUpdateProductOnPage(product);
-          saveProductToLocalStorage(product);
-        } else {
-          addOrUpdateProductOnPage(product);
-        }
-      });
+      if (productList.length === 0) {
+        mainContent.innerHTML = "<p>Товары не найдены.</p>";
+      } else {
+        productList.forEach(product => addOrUpdateProductOnPage(product));
+      }
+
+      hideSpinner(); // <-- Прячем спиннер ТОЛЬКО когда товары реально пришли
     });
+
   }
 
   // Обработчик кликов по категориям в sidebar
@@ -152,35 +171,33 @@ document.addEventListener("DOMContentLoaded", () => {
       const category = image.dataset.category;
       if (category !== currentCategory) {
         currentCategory = category;
+
+        clearProducts();   // Очищаем карточки
+        showSpinner();     // Показываем спиннер
+
         renderedProducts.clear();
-        mainContent.innerHTML = "";
-
-        subscribeToCategory(category); // <--- ПЕРЕПОДПИСКА ПО НОВОЙ КАТЕГОРИИ
-
-        fetchAndRenderProducts(category); // Загрузка по новой категории
+        subscribeToCategory(category);
+        fetchAndRenderProducts(category);
       }
     });
   });
 
-
   function fetchAndRenderProducts(category) {
+    renderedProducts.clear();
+    showSpinner();
+
     fetch("/parse?category=" + category, { method: "POST" })
-        .then(res => res.json()) // Получаем список продуктов
-        .then(product => {
-          mainContent.innerHTML = ""; // Очищаем старые товары
-          renderedProducts.clear();  // Очищаем кешированные товары
-          localStorage.setItem("products", JSON.stringify(product)); // Сохраняем в localStorage
-
-          // Добавляем товары на страницу
-          product.forEach(product => addOrUpdateProductOnPage(product));
-
-          // Запускаем WebSocket для получения дальнейших обновлений
-          setupWebSocket();
+        .then(() => {
+          console.log("Парсинг отправлен, ждём WebSocket сообщения");
+          // Больше ничего не делаем!
         })
         .catch(err => {
+          hideSpinner();
           console.error("Ошибка при парсинге:", err);
+          mainContent.innerHTML = "<p>Ошибка при загрузке товаров.</p>";
         });
   }
+
 
   // Настроить WebSocket при загрузке страницы
   setupWebSocket();

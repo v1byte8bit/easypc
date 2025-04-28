@@ -32,7 +32,6 @@ public class ProductParserService {
     @Autowired
     private ProductComparator productComparator;
 
-
     /*
         Каждый запрос на парсинг запускается в отдельном потоке с помощью ExecutorService и CompletableFuture
     */
@@ -81,4 +80,5 @@ public class ProductParserService {
                 .map(p -> p.parse(source, category))
                 .orElseThrow(() -> new RuntimeException("No parser found for URL: " + source.getSource()));
     }
+
 }

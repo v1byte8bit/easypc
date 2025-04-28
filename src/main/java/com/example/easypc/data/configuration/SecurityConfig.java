@@ -44,7 +44,8 @@ public class SecurityConfig {
                                 "/topic/products",
                                 "/websocket-endpoint/**",
                                 "/topic",
-                                "/app").permitAll()
+                                "/app",
+                                "/products").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

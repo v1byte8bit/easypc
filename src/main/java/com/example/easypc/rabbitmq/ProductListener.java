@@ -1,19 +1,20 @@
 package com.example.easypc.rabbitmq;
 
-import com.example.easypc.parse.ProductData;
-import com.example.easypc.websocket.WebSocketSender;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+import com.example.easypc.filter.ProductPriceComparator;
+import com.example.easypc.parse.ProductData;
+import lombok.AllArgsConstructor;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Service;
+
+@Service
+@AllArgsConstructor
 public class ProductListener {
 
-    @Autowired
-    private WebSocketSender webSocketSender;
+    private final ProductPriceComparator productService;
 
     @RabbitListener(queues = "test-queue")
-    public void receiveProductData(ProductData productData) {
-        webSocketSender.sendProductData(productData);
+    public void consumeProduct(ProductData incomingProduct) {
+        productService.processProduct(incomingProduct);
     }
 }
