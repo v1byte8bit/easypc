@@ -24,16 +24,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const items = await response.json();
 
-      const cpuItem = items.find(item => item.category === "cpu" && item.characteristics?.socket);
+      // Восстанавливаем сокет CPU
+      const cpuItem = items.find(item => item.category === "cpu" && item.characteristics?.["Сокет"]);
       if (cpuItem) {
-        localStorage.setItem("selectedCpuSocket", cpuItem.characteristics.socket);
+        localStorage.setItem("selectedCpuSocket", cpuItem.characteristics["Сокет"]);
       } else {
         localStorage.removeItem("selectedCpuSocket");
       }
+
+      // Восстанавливаем тип памяти
+      const motherboardOrRamItem = items.find(item =>
+          (item.category === "motherboard" || item.category === "ram") &&
+          item.characteristics?.["Тип памяти"]
+      );
+      if (motherboardOrRamItem) {
+        localStorage.setItem("selectedMemoryType", motherboardOrRamItem.characteristics["Тип памяти"]);
+      } else {
+        localStorage.removeItem("selectedMemoryType");
+      }
+
     } catch (err) {
-      console.error("Ошибка при восстановлении сокета CPU:", err);
+      console.error("Ошибка при восстановлении данных из корзины:", err);
     }
   }
+
 
   if (isAuthenticated) {
     updateCartTotal();
@@ -58,11 +72,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (product.category === "motherboard") {
       const requiredSocket = localStorage.getItem("selectedCpuSocket");
-      const motherboardSocket = product.characteristics?.socket;
+      const motherboardSocket = product.characteristics?.["Сокет"];
       if (requiredSocket && motherboardSocket && requiredSocket !== motherboardSocket) {
-        return; // Сокет не совпадает — не показываем
+        return;
       }
     }
+
+    if (product.category === "ram") {
+      const requiredMemoryType = localStorage.getItem("selectedMemoryType");
+      const ramType = product.characteristics?.["Тип памяти"];
+      if (requiredMemoryType && ramType && requiredMemoryType !== ramType) {
+        return;
+      }
+    }
+
 
     if (renderedProducts.has(product.urlId)) {
       const existingProduct = renderedProducts.get(product.urlId);
@@ -119,9 +142,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    if (product.category === "cpu" && product.characteristics?.socket) {
-      localStorage.setItem("selectedCpuSocket", product.characteristics.socket);
+    if (product.category === "cpu" && product.characteristics?.["Сокет"]) {
+      localStorage.setItem("selectedCpuSocket", product.characteristics["Сокет"]);
     }
+
+    if (product.category === "motherboard" && product.characteristics?.["Тип памяти"]) {
+      localStorage.setItem("selectedMemoryType", product.characteristics["Тип памяти"]);
+    }
+
 
     fetch("/add?sourceId=" + product.urlId, {
       method: "POST",

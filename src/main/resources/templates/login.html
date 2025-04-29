@@ -111,6 +111,13 @@
       margin-top: 10px;
       font-size: 16px;
     }
+
+    .button-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
   </style>
 </head>
 <body>
@@ -127,8 +134,13 @@
       <input type="password" id="password" name="password" placeholder="Введите пароль" required>
     </div>
     <div class="error" id="error"></div>
-    <button type="submit" class="button">Войти</button>
+
+    <!-- Контейнер для центрирования кнопки -->
+    <div class="button-wrapper">
+      <button type="submit" class="button">Войти</button>
+    </div>
   </form>
+
 
   <div class="link" onclick="window.location.href='/register'">Ещё не зарегистрированы?</div>
 </div>

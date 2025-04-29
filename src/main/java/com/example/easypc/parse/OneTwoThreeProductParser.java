@@ -47,35 +47,35 @@ public class OneTwoThreeProductParser implements ProductParser {
     private Map<String, String> extractCharacteristics(Document doc, String category) {
         Map<String, Map<String, String>> categoryMappings = Map.of(
                 "cpu", Map.of(
-                        "Socket", "socket",
-                        "Типичная рассеиваемая мощность (TDP)", "tdp",
-                        "Наличие встроенного графического ядра", "graph",
-                        "Рабочая частота процессора", "frequency"
+                        "Socket", "Сокет",
+                        "Типичная рассеиваемая мощность (TDP)", "Тепловыделение (TDP)",
+                        "Наличие встроенного графического ядра", "Встроенная графика",
+                        "Рабочая частота процессора", "Частота"
                 ),
                 "psu", Map.of(
-                        "Мощность", "power"
+                        "Мощность", "Мощность"
                 ),
                 "ram", Map.of(
-                        "Количество модулей памяти в комплекте, шт.", "count",
-                        "Тип модуля памяти", "type",
-                        "Объем одного модуля памяти", "volume",
-                        "Рабочая частота, МГц", "frequency"
+                        "Количество модулей памяти в комплекте, шт.", "Количество модулей в комплекте",
+                        "Тип модуля памяти", "Тип памяти",
+                        "Объем одного модуля памяти", "Объем одного модуля",
+                        "Рабочая частота, МГц", "Частота"
                 ),
                 "motherboard", Map.of(
-                        "Разъем CPU", "socket",
-                        "Чипсет (Intel)", "chipset",
-                        "Чипсет (AMD)", "chipset",
-                        "Поддержка оперативной памяти", "ram_type",
-                        "Количество слотов M.2", "m2_count"
+                        "Разъем CPU", "Сокет",
+                        "Чипсет (Intel)", "Чипсет",
+                        "Чипсет (AMD)", "Чипсет",
+                        "Поддержка оперативной памяти", "Тип памяти",
+                        "Количество слотов M.2", "Количество разъемов M.2"
                 ),
                 "fan", Map.of(
-                        "Совместимые разъёмы CPU", "socket"
+                        "Совместимые разъёмы CPU", "Сокет"
                 ),
                 "hdd", Map.of(
-                        "Ёмкость", "hdd_volume"
+                        "Ёмкость", "Объем накопителя"
                 ),
                 "ssd", Map.of(
-                        "Объём", "ssd_volume"
+                        "Объём", "Объем накопителя"
                 )
         );
 
@@ -92,10 +92,10 @@ public class OneTwoThreeProductParser implements ProductParser {
                 if (mapping.containsKey(key)) {
                     String normalizedKey = mapping.get(key);
                     String value = valueElement.text().trim();
-                    if (normalizedKey.equals("socket")) {
+                    if (normalizedKey.equals("Сокет")) {
                         value = normalizeSocket(value);
                     }
-                    if (normalizedKey.equals("tdp")) {
+                    if (normalizedKey.equals("Тепловыделение (TDP)")) {
                         value = String.valueOf(normalizePower(value));
                     }
                     characteristics.put(normalizedKey, value);

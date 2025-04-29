@@ -91,22 +91,25 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("");
 
         contentBox.innerHTML = `
-            <img src="${product.img}" alt="${product.name}" class="content-image" />
-            <div class="content-text">
-                <h3>${product.name || "Не указано"}</h3>
-                <p class="product-price">Цена: ₽${product.price || "Не указана"}</p>
-                <div class="product-characteristics">
-                  ${characteristicsHtml}
-                </div>
-                <div class="quantity-controls">
-                    <button class="decrease" data-id="${product.urlId}">-</button>
-                    <span class="quantity" data-id="${product.urlId}">${product.quantity}</span>
-                    <button class="increase" data-id="${product.urlId}">+</button>
-                </div>
-            </div>
-            <button class="remove-button" data-id="${product.urlId}">Удалить</button>
-        `;
-
+  <img src="${product.img}" alt="${product.name}" class="content-image" />
+  <div class="content-info-wrapper">
+    <div class="content-text">
+      <h3>${product.name || "Не указано"}</h3>
+      <p class="product-price">Цена: ₽${product.price || "Не указана"}</p>
+      <div class="product-characteristics">
+        ${characteristicsHtml}
+      </div>
+    </div>
+    <div class="content-actions">
+      <div class="quantity-controls">
+        <button class="decrease" data-id="${product.urlId}">-</button>
+        <span class="quantity" data-id="${product.urlId}">${product.quantity}</span>
+        <button class="increase" data-id="${product.urlId}">+</button>
+      </div>
+      <button class="remove-button" data-id="${product.urlId}">Удалить</button>
+    </div>
+  </div>
+`;
         const decreaseButton = contentBox.querySelector(".decrease");
         const increaseButton = contentBox.querySelector(".increase");
         const quantitySpan = contentBox.querySelector(".quantity");
