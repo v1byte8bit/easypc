@@ -161,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderedProducts.get(urlId)?.remove();
                 renderedProducts.delete(urlId);
                 updateCartTotal();
+                localStorage.removeItem("selectedCpuSocket");
             })
             .catch(error => console.error("Ошибка при удалении товара:", error));
     }

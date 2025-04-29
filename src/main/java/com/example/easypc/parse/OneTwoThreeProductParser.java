@@ -108,6 +108,8 @@ public class OneTwoThreeProductParser implements ProductParser {
     public String normalizeSocket(String socket) {
         if (socket == null) return null;
         socket = socket.replace("AMD ", "");
+        socket = socket.replace("Socket ", "");
+        socket = socket.replace("Intel ", "");
         return socket.trim();
     }
 

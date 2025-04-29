@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const cart = document.getElementById("cart");
   const authButton = document.getElementById("auth-button");
   const mainContent = document.querySelector(".main-content");
@@ -6,26 +6,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const sidebarImages = document.querySelectorAll(".sidebar img");
   const loadingSpinner = document.getElementById('loading-spinner');
   const productsContainer = document.getElementById('products-container');
+  const isAuthenticated = authButton?.dataset.authenticated === "true";
+  const renderedProducts = new Map();
+  let currentCategory = null;
 
-  const renderedProducts = new Map(); // Храним товары по их urlId
-  let currentCategory = null; // Текущая выбранная категория
-
-  function showSpinner() {
-    loadingSpinner.style.display = 'block';
+  function showAuthNotice() {
+    const notice = document.getElementById("auth-notice");
+    if (notice) {
+      notice.style.display = "block";
+      setTimeout(() => {
+        notice.style.display = "none";
+      }, 3000);
+    }
   }
-
-  function hideSpinner() {
-    loadingSpinner.style.display = 'none';
-  }
-
-  function clearProducts() {
-    productsContainer.innerHTML = '';
-  }
-
 
   // Функция добавления/обновления товара на странице
   function addOrUpdateProductOnPage(product) {
     if (product.category !== currentCategory) return;
+
+    if (product.category === "motherboard") {
+      const requiredSocket = localStorage.getItem("selectedCpuSocket");
+      const motherboardSocket = product.characteristics?.socket;
+      if (requiredSocket && motherboardSocket && requiredSocket !== motherboardSocket) {
+        return; // Сокет не совпадает — не показываем
+      }
+    }
 
     if (renderedProducts.has(product.urlId)) {
       const existingProduct = renderedProducts.get(product.urlId);
@@ -41,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
         .join("");
 
-    contentBox.className = "content-box fade-in"; // ← здесь!
+    contentBox.className = "content-box fade-in";
 
     contentBox.setAttribute("data-id", product.urlId);
     contentBox.innerHTML = `
@@ -70,17 +75,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 100);
   }
 
-
   // Функция добавления товара в корзину
   function addToCart(product) {
+    if (!isAuthenticated) {
+      showAuthNotice();
+      return;
+    }
+
     if (!product.urlId) {
       console.error("Ошибка: у продукта нет urlId");
       return;
     }
 
+    if (product.category === "cpu" && product.characteristics?.socket) {
+      localStorage.setItem("selectedCpuSocket", product.characteristics.socket);
+    }
+
     fetch("/add?sourceId=" + product.urlId, {
       method: "POST",
-      headers: { "Content-Type": "application/json" }
+      headers: {"Content-Type": "application/json"}
     })
         .then(response => {
           if (!response.ok) {
@@ -89,40 +102,46 @@ document.addEventListener("DOMContentLoaded", () => {
           return response.text();
         })
         .then(() => {
-          alert("Товар добавлен в корзину");
           updateCartTotal(); // Обновляем сумму корзины после добавления
         })
         .catch(error => {
           console.error("Ошибка:", error);
-          alert("Не удалось добавить товар в корзину");
         });
   }
 
   // Обновление суммы корзины
   function updateCartTotal() {
+    if (!isAuthenticated) {
+      if (cartTotal) {
+        cartTotal.textContent = "Корзина";
+        cartTotal.style.display = "block";
+      }
+      return;
+    }
+
     fetch("/cart/total", {
       method: "GET",
-      headers: { "Content-Type": "application/json" },
+      headers: {"Content-Type": "application/json"},
       credentials: "include"
     })
         .then(response => response.json())
         .then(data => {
-          if (!cartTotal) {
-            console.error("cartTotal не найден!");
-            return;
-          }
+          if (!cartTotal) return;
 
           const total = typeof data === "number" ? data : parseFloat(data.total);
           if (!isNaN(total)) {
             cartTotal.textContent = `${total}₽`;
             cartTotal.style.display = "block";
           } else {
-            cartTotal.style.display = "none";
+            cartTotal.textContent = "Корзина";
+            cartTotal.style.display = "block";
           }
         })
-        .catch(error => {
-          console.error("Ошибка получения суммы корзины:", error);
-          cartTotal.style.display = "none";
+        .catch(() => {
+          if (cartTotal) {
+            cartTotal.textContent = "Корзина";
+            cartTotal.style.display = "block";
+          }
         });
   }
 
@@ -134,14 +153,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const socket = new SockJS('/websocket-endpoint');
     stompClient = Stomp.over(socket);
 
-    stompClient.connect({}, function(frame) {
+    stompClient.connect({}, function (frame) {
       console.log('Connected to WebSocket: ' + frame);
-    }, function(error) {
+    }, function (error) {
       console.error("Ошибка подключения WebSocket:", error);
       setTimeout(setupWebSocket, 5000); // Переподключение
     });
   }
 
+  // Настроить WebSocket при загрузке страницы
+  setupWebSocket();
 
   function subscribeToCategory(category) {
     if (currentSubscription) {
@@ -150,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!category) return;
 
-    currentSubscription = stompClient.subscribe('/topic/products/' + category, function(message) {
+    currentSubscription = stompClient.subscribe('/topic/products/' + category, function (message) {
       const productList = JSON.parse(message.body);
       console.log("Получен список товаров по WebSocket:", productList);
 
@@ -186,7 +207,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderedProducts.clear();
     showSpinner();
 
-    fetch("/parse?category=" + category, { method: "POST" })
+    fetch("/parse?category=" + category, {method: "POST"})
         .then(() => {
           console.log("Парсинг отправлен, ждём WebSocket сообщения");
           // Больше ничего не делаем!
@@ -198,17 +219,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
   }
 
-
-  // Настроить WebSocket при загрузке страницы
-  setupWebSocket();
-
-  // Обновляем сумму корзины при загрузке страницы
-  updateCartTotal();
-
   // Переход в корзину
   if (cart) {
     cart.addEventListener("click", () => {
-      window.location.href = "/cart";
+      if (!isAuthenticated) {
+        showAuthNotice();
+      } else {
+        window.location.href = "/cart";
+      }
     });
   }
 
@@ -227,4 +245,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
+
+  function showSpinner() {
+    loadingSpinner.style.display = 'block';
+  }
+
+  function hideSpinner() {
+    loadingSpinner.style.display = 'none';
+  }
+
+  function clearProducts() {
+    productsContainer.innerHTML = '';
+  }
+
+  // Обновляем сумму корзины при загрузке страницы
+  updateCartTotal();
 });
