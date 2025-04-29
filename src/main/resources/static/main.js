@@ -10,6 +10,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   const renderedProducts = new Map();
   let currentCategory = null;
 
+  async function restoreCpuSocketFromCart() {
+    if (!isAuthenticated) return;
+
+    try {
+      const response = await fetch("/cart/items", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      });
+
+      if (!response.ok) throw new Error("Ошибка получения корзины");
+
+      const items = await response.json();
+
+      const cpuItem = items.find(item => item.category === "cpu" && item.characteristics?.socket);
+      if (cpuItem) {
+        localStorage.setItem("selectedCpuSocket", cpuItem.characteristics.socket);
+      } else {
+        localStorage.removeItem("selectedCpuSocket");
+      }
+    } catch (err) {
+      console.error("Ошибка при восстановлении сокета CPU:", err);
+    }
+  }
+
+  if (isAuthenticated) {
+    updateCartTotal();
+    restoreCpuSocketFromCart();
+  } else {
+    localStorage.removeItem("selectedCpuSocket");
+  }
+
   function showAuthNotice() {
     const notice = document.getElementById("auth-notice");
     if (notice) {

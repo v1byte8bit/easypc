@@ -111,6 +111,7 @@ public class CartService {
                                     productData.getCategory(),
                                     productData.getImg(),
                                     productData.getUrlId(),
+                                    productData.getCharacteristics(),
                                     cartItem.getQuantity()
                             );
                         }

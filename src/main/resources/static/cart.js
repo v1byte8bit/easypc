@@ -86,13 +86,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const contentBox = document.createElement("div");
         contentBox.className = "product-box";
         contentBox.setAttribute("data-id", product.urlId);
+        const characteristicsHtml = Object.entries(product.characteristics || {})
+            .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+            .join("");
 
         contentBox.innerHTML = `
             <img src="${product.img}" alt="${product.name}" class="content-image" />
             <div class="content-text">
                 <h3>${product.name || "Не указано"}</h3>
-                <p>Категория: ${product.category || "Не указана"}</p>
                 <p class="product-price">Цена: ₽${product.price || "Не указана"}</p>
+                <div class="product-characteristics">
+                  ${characteristicsHtml}
+                </div>
                 <div class="quantity-controls">
                     <button class="decrease" data-id="${product.urlId}">-</button>
                     <span class="quantity" data-id="${product.urlId}">${product.quantity}</span>
