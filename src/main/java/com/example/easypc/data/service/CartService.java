@@ -79,9 +79,18 @@ public class CartService {
         return cartItems.stream()
                 .map(item -> {
                     ProductData productData = productDataMap.get(item.getSource().getId().longValue());
-                    return (productData != null)
-                            ? new BigDecimal(productData.getPrice()).multiply(BigDecimal.valueOf(item.getQuantity()))
-                            : BigDecimal.ZERO;
+
+                    if (productData == null || productData.getPrice() == null) {
+                        return BigDecimal.ZERO;
+                    }
+
+                    try {
+                        String cleanPrice = productData.getPrice().replaceAll("[^\\d.]", "");
+                        return new BigDecimal(cleanPrice).multiply(BigDecimal.valueOf(item.getQuantity()));
+                    } catch (NumberFormatException e) {
+
+                        return BigDecimal.ZERO;
+                    }
                 })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

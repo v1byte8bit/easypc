@@ -10,6 +10,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const renderedProducts = new Map();
   let currentCategory = null;
 
+  const categoryLocalStorageMap = {
+    cpu: {
+      "Сокет": "selectedCpuSocket",
+      "Тепловыделение (TDP)": "tdp_cpu"
+    },
+    gpu: {
+      "Тепловыделение (TDP)": "tdp_gpu"
+    },
+    motherboard: {
+      "Тип памяти": "selectedMemoryType"
+    }
+  };
+
   async function restoreCpuSocketFromCart() {
     if (!isAuthenticated) return;
 
@@ -43,17 +56,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         localStorage.removeItem("selectedMemoryType");
       }
 
+      const cpuTdp = items.find(item => item.category === "cpu")?.characteristics?.["Тепловыделение (TDP)"];
+      const gpuTdp = items.find(item => item.category === "gpu")?.characteristics?.["Тепловыделение (TDP)"];
+
+      if (cpuTdp) {
+        const match = cpuTdp.match(/\d+/);
+        if (match) localStorage.setItem("tdp_cpu", match[0]);
+      }
+
+      if (gpuTdp) {
+        const match = gpuTdp.match(/\d+/);
+        if (match) localStorage.setItem("tdp_gpu", match[0]);
+      }
     } catch (err) {
       console.error("Ошибка при восстановлении данных из корзины:", err);
     }
   }
-
 
   if (isAuthenticated) {
     updateCartTotal();
     restoreCpuSocketFromCart();
   } else {
     localStorage.removeItem("selectedCpuSocket");
+    localStorage.removeItem("selectedMemoryType");
+    localStorage.removeItem("tdp_cpu");
+    localStorage.removeItem("tdp_gpu");
   }
 
   function showAuthNotice() {
@@ -86,6 +113,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
 
+    if (product.category === "psu") {
+      const cpuTdp = parseInt(localStorage.getItem("tdp_cpu")) || 0;
+      const gpuTdp = parseInt(localStorage.getItem("tdp_gpu")) || 0;
+      const totalTdp = cpuTdp + gpuTdp;
+
+      if (totalTdp > 0) {
+        const recommendedWattage = Math.ceil(totalTdp * 1.3);
+        const wattRaw = product.characteristics?.["Мощность"];
+        const watt = wattRaw ? parseInt(wattRaw.match(/\d+/)?.[0]) : 0;
+
+        // Пропускаем, если БП слишком слабый или чрезмерно мощный
+        if (watt < recommendedWattage || watt > recommendedWattage + 200) {
+          return;
+        }
+      }
+    }
 
     if (renderedProducts.has(product.urlId)) {
       const existingProduct = renderedProducts.get(product.urlId);
@@ -150,6 +193,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       localStorage.setItem("selectedMemoryType", product.characteristics["Тип памяти"]);
     }
 
+    if (product.category === "cpu" || product.category === "gpu") {
+      const tdpRaw = product.characteristics?.["Тепловыделение (TDP)"];
+      if (tdpRaw) {
+        const match = tdpRaw.match(/\d+/);
+        if (match) {
+          localStorage.setItem(`tdp_${product.category}`, match[0]);
+        }
+      }
+    }
+
+    const mappings = categoryLocalStorageMap[product.category];
+    if (mappings && product.characteristics) {
+      Object.entries(mappings).forEach(([characteristicKey, storageKey]) => {
+        const value = product.characteristics[characteristicKey];
+        if (value) {
+          localStorage.setItem(storageKey, value);
+        }
+      });
+    }
 
     fetch("/add?sourceId=" + product.urlId, {
       method: "POST",

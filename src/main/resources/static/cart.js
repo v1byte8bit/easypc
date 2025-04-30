@@ -170,6 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderedProducts.delete(urlId);
                 updateCartTotal();
                 localStorage.removeItem("selectedCpuSocket");
+                localStorage.removeItem("selectedMemoryType");
+                localStorage.removeItem("tdp_cpu");
+                localStorage.removeItem("tdp_gpu");
             })
             .catch(error => console.error("Ошибка при удалении товара:", error));
     }
