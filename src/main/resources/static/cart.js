@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentQuantity = parseInt(quantitySpan.textContent);
         let newQuantity = currentQuantity + change;
 
-        if (newQuantity < 1) return; // Запрещаем уходить в 0
+        if (newQuantity < 1) return;
 
         console.log(`Отправка запроса на обновление количества: ${newQuantity}`);
 

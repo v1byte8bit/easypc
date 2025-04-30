@@ -191,6 +191,8 @@
     .content-info-wrapper {
       display: flex;
       justify-content: space-between;
+      align-items: stretch; /* Выравнивание по верхнему краю */
+      flex: 1; /* Занимает всё доступное место в product-box */
       gap: 20px;
     }
 
@@ -202,6 +204,8 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+      justify-content: flex-end;
+      min-width: 120px;
       gap: 10px;
     }
 
