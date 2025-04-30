@@ -4,9 +4,9 @@ import com.example.easypc.data.entity.Source;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
-import java.io.File;
 import java.time.Duration;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -16,38 +16,72 @@ import java.util.regex.Pattern;
 @Component
 public class CitilinkProductParser implements ProductParser {
 
-    private final WebDriver driver;
+    private final ChromeOptions options;
+
+    private WebDriver driver;
+
+    private void restartDriver() {
+        try {
+            if (driver != null) {
+                driver.quit();
+            }
+        } catch (Exception ignored) {}
+
+        this.driver = new ChromeDriver(options);
+    }
 
     public CitilinkProductParser() {
         System.setProperty("webdriver.chrome.driver", "C:/chromedriver-win64/chromedriver.exe");
-        String chromeDriverPath = "C:/chromedriver-win64/chromedriver.exe";
-        File driverFile = new File(chromeDriverPath);
-        if (!driverFile.exists()) {
-            throw new RuntimeException("ChromeDriver not found at " + chromeDriverPath);
-        }
-        ChromeOptions options = new ChromeOptions();
+
+        options = new ChromeOptions();
         options.addArguments("--headless");
+        options.addArguments("--disable-gpu");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--blink-settings=imagesEnabled=false");
+        options.setExperimentalOption("excludeSwitches", List.of("enable-automation", "disable-popup-blocking"));
+        options.setExperimentalOption("useAutomationExtension", false);
+        options.setPageLoadStrategy(PageLoadStrategy.NONE);
+
         this.driver = new ChromeDriver(options);
     }
+
 
     @Override
     public ProductData parse(Source source, String category) {
         String url = source.getSource();
+        WebDriver localDriver = null;
         try {
-            driver.get(url);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            String productName = driver.findElement(By.cssSelector("div[data-meta-name='ProductHeaderLayout__title'] h1")).getText();
+            localDriver = new ChromeDriver(options);
+            localDriver.get(url);
+            Thread.sleep(3000);
+
+            WebDriverWait wait = new WebDriverWait(localDriver, Duration.ofSeconds(15));
+            wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector("div[data-meta-name='ProductHeaderLayout__title'] h1")));
+
+            String productName = localDriver.findElement(By.cssSelector("div[data-meta-name='ProductHeaderLayout__title'] h1")).getText();
             productName = cleanName(productName);
-            String productPrice = driver.findElement(By.cssSelector("span[class*='MainPriceNumber']")).getText();
-            String imageUrl = driver.findElement(By.cssSelector("meta[property='og:image']")).getAttribute("content");
+
+            wait.until(ExpectedConditions.presenceOfElementLocated(
+                    By.cssSelector("span[class*='MainPriceNumber']")));
+            String productPrice = localDriver.findElement(By.cssSelector("span[class*='MainPriceNumber']")).getText();
+
+            String imageUrl = localDriver.findElement(By.cssSelector("meta[property='og:image']")).getAttribute("content");
             Long urlId = Long.valueOf(source.getId());
-            Map<String, String> characteristics = extractCharacteristics(category, url);
+
+            Map<String, String> characteristics = extractCharacteristics(category, url, localDriver);
 
             return new ProductData(productName, productPrice, category, imageUrl, urlId, characteristics);
+
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+        } finally {
+            if (localDriver != null) {
+                localDriver.quit();
+            }
         }
+        return null;
     }
 
     @Override
@@ -55,7 +89,8 @@ public class CitilinkProductParser implements ProductParser {
         return url.contains("citilink.ru");
     }
 
-    private Map<String, String> extractCharacteristics(String category, String url) {
+    private Map<String, String> extractCharacteristics(String category, String url, WebDriver driver)
+    {
         Map<String, Map<String, String>> categoryMappings = Map.of(
                 "cpu", Map.of(
                         "Сокет", "Сокет",
@@ -146,13 +181,13 @@ public class CitilinkProductParser implements ProductParser {
                         if (mapping.containsKey(key)) {
                             String mappedKey = mapping.get(key);
                             // Нормализация значений
-                            if ("frequency".equals(mappedKey)) {
+                            if ("Частота".equals(mappedKey)) {
                                 String normalizedFrequency = normalizeFrequencyToMHz(value);
                                 if (normalizedFrequency != null) {
                                     value = normalizedFrequency.toString();
                                 }
                             }
-                            if ("graph".equals(mappedKey)) {
+                            if ("Встроенная графика".equals(mappedKey)) {
                                 value = normalizeGraphicsCore(value);
                             }
                             result.put(mappedKey, value);
@@ -209,6 +244,4 @@ public class CitilinkProductParser implements ProductParser {
         if (name == null) return null;
         return name.replaceAll("\\s*\\[[^]]*\\]", "").trim();
     }
-
-
 }

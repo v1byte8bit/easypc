@@ -3,6 +3,7 @@ package com.example.easypc.parse;
 import com.example.easypc.data.entity.Source;
 import com.example.easypc.data.repository.SourceRepository;
 import com.example.easypc.filter.ProductComparator;
+import com.example.easypc.filter.ProductPriceComparator;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class ProductParserService {
     private final List<ProductParser> parsers;
 
     @Autowired
-    private ProductComparator productComparator;
+    private ProductPriceComparator productPriceComparator;
 
     /*
         Каждый запрос на парсинг запускается в отдельном потоке с помощью ExecutorService и CompletableFuture
@@ -40,32 +41,20 @@ public class ProductParserService {
         List<Source> sources = sourceRepository.findByCategory(category);
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
-        List<CompletableFuture<Void>> futures = sources.stream()
-                .map(source -> CompletableFuture.runAsync(() -> parseAndSend(source, category), executor))
+        // Собираем парсинг в futures
+        List<CompletableFuture<ProductData>> futures = sources.stream()
+                .map(source -> CompletableFuture.supplyAsync(() -> parseProduct(source, category), executor))
                 .toList();
 
-        futures.forEach(CompletableFuture::join);
-        executor.shutdown();
-
-        List<ProductData> productList = sources.stream()
-                .map(source -> parseProduct(source, category))
+        // Дожидаемся завершения всех задач
+        List<ProductData> productList = futures.stream()
+                .map(CompletableFuture::join)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
 
-        productList.forEach(productData ->
-                rabbitTemplate.convertAndSend("productExchange", "product.data", productData)
-        );
-
+        executor.shutdown();
+        productPriceComparator.processProductList(productList);
         return CompletableFuture.completedFuture(productList);
-    }
-
-    private void parseAndSend(Source source, String category) {
-        ProductData productData = parseProduct(source, category);
-        if (productData != null) {
-            CompletableFuture.runAsync(() ->
-                    rabbitTemplate.convertAndSend("productExchange", "product.data", productData)
-            );
-        }
     }
 
     public ProductData parseSingleProduct(Long urlId) {
@@ -80,5 +69,4 @@ public class ProductParserService {
                 .map(p -> p.parse(source, category))
                 .orElseThrow(() -> new RuntimeException("No parser found for URL: " + source.getSource()));
     }
-
 }

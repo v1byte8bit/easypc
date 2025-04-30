@@ -77,5 +77,35 @@ public class ProductPriceComparator {
     public List<ProductData> getProductsByCategory(String category) {
         return productCache.getOrDefault(category, List.of());
     }
-}
 
+    public void processProductList(List<ProductData> products) {
+        if (products == null || products.isEmpty()) return;
+
+        String category = products.get(0).getCategory(); // Предполагаем, что все из одной категории
+        productCache.putIfAbsent(category, new ArrayList<>());
+        List<ProductData> existingProducts = productCache.get(category);
+        List<ProductData> updatedProducts = new ArrayList<>(existingProducts);
+
+        for (ProductData incomingProduct : products) {
+            boolean merged = false;
+            for (int i = 0; i < updatedProducts.size(); i++) {
+                ProductData existing = updatedProducts.get(i);
+                if (productComparator.areSameProduct(existing, incomingProduct)) {
+                    double incomingPrice = parsePrice(incomingProduct.getPrice());
+                    double existingPrice = parsePrice(existing.getPrice());
+                    if (incomingPrice < existingPrice) {
+                        updatedProducts.set(i, incomingProduct);
+                    }
+                    merged = true;
+                    break;
+                }
+            }
+            if (!merged) {
+                updatedProducts.add(incomingProduct);
+            }
+        }
+
+        productCache.put(category, updatedProducts);
+        debounceSend(category);
+    }
+}
