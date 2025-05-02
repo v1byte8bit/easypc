@@ -1,36 +1,37 @@
 package com.example.easypc.data.entity;
 
-import lombok.Data;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-@Data
-@Entity
 @Getter
 @Setter
-@Table(name = "notifications")
+@Entity
+@Table(name = "notification")
 public class Notification {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idNote;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "notification_id_gen")
+    @SequenceGenerator(name = "notification_id_gen", sequenceName = "notification_id_seq", allocationSize = 1)
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "message", nullable = false, length = Integer.MAX_VALUE)
     private String message;
 
-    @ManyToOne
-    @JoinColumn(name = "variant1", nullable = true)
-    private Source variant1;
+    @ColumnDefault("false")
+    @Column(name = "answered")
+    private Boolean answered;
 
-    @ManyToOne
-    @JoinColumn(name = "variant3", nullable = true)
-    private Source variant2;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "assembler_id", nullable = false)
+    private User assembler;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

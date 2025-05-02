@@ -2,48 +2,35 @@ package com.example.easypc.data.service;
 
 import com.example.easypc.data.entity.Notification;
 import com.example.easypc.data.entity.Order;
-import com.example.easypc.data.entity.Source;
 import com.example.easypc.data.entity.User;
 import com.example.easypc.data.repository.NotificationRepository;
 import com.example.easypc.data.repository.OrderRepository;
-import com.example.easypc.data.repository.SourceRepository;
 import com.example.easypc.data.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class NotificationService {
 
-    private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
-    private final SourceRepository sourceRepository;
+    private final NotificationRepository notificationRepository;
 
-    public Notification createNotification(Long userId, Long orderId, String message, Long variant1Id, Long variant2Id) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+    public void createNotification(String message, Integer orderId, Authentication authentication) {
+        User assembler = userRepository.findByphone(authentication.getName());
+        Order order = orderRepository.findById(Long.valueOf(orderId))
+                .orElseThrow(() -> new RuntimeException("Заказ не найден"));
 
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Заказ не найден"));
-
-        Source variant1 = (variant1Id != null) ? sourceRepository.findById(variant1Id).orElse(null) : null;
-        Source variant2 = (variant2Id != null) ? sourceRepository.findById(variant2Id).orElse(null) : null;
+        User user = order.getUser();
 
         Notification notification = new Notification();
-        notification.setUser(user);
-        notification.setOrder(order);
         notification.setMessage(message);
-        notification.setVariant1(variant1);
-        notification.setVariant2(variant2);
+        notification.setUser(user);
+        notification.setAssembler(assembler);
+        notification.setAnswered(false);
 
-        return notificationRepository.save(notification);
-    }
-
-    public List<Notification> getUserNotifications(Long userId) {
-        return notificationRepository.findByUserId(userId);
+        notificationRepository.save(notification);
     }
 }

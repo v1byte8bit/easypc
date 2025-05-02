@@ -147,8 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(() => {
                 console.log("Количество успешно обновлено");
-                quantitySpan.textContent = newQuantity; // Обновляем UI
-                updateCartTotal(); // Обновляем сумму корзины
+                quantitySpan.textContent = newQuantity;
+                updateCartTotal();
             })
             .catch(error => console.error("Ошибка при обновлении количества:", error));
     }
@@ -193,10 +193,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data !== null && parseFloat(data) > 0) {
                     cartTotal.textContent = `₽${data}`;
                     cartTotal.style.display = "block";
-                    orderButton.style.display = "flex"; // Показываем кнопку "Заказать"
                 } else {
                     cartTotal.style.display = "none";
-                    orderButton.style.display = "none"; // Скрываем кнопку "Заказать", если корзина пуста
                 }
             })
             .catch(error => {

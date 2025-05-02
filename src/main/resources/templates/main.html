@@ -226,6 +226,37 @@
 
     }
 
+    .category-hint {
+      text-align: center;
+      font-size: 2.5em;
+      color: #555;
+      margin-top: 100px;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .arrow-left {
+      width: 0;
+      height: 0;
+      margin: 10px auto 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-right: 15px solid #3498db; /* Цвет стрелки */
+      animation: bounceLeft 1s infinite;
+    }
+
+    @keyframes bounceLeft {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(-10px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -261,6 +292,10 @@
 
     <!-- Основная область -->
     <div class="main-content">
+      <div id="category-hint" class="category-hint">
+        <p>Выберите категорию</p>
+        <div class="arrow-left"></div>
+      </div>
       <div id="loading-spinner" style="display: none;">
         <div class="spinner"></div>
         <p>Загрузка товаров...</p>

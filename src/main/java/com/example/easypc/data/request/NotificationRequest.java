@@ -6,9 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NotificationRequest {
-    private Long userId;
-    private Long orderId;
     private String message;
-    private Long variant1Id;
-    private Long variant2Id;
+    private Integer userId;
+    private Integer assemblerId;
 }

@@ -2,7 +2,7 @@ const navLinks = {
     'Персональные данные': '/assembler/profile',
     'Заявки': '/assembler/orders',
     'В работе': '/on_work',
-    'Выход': '/assembler/logout',
+    'Выход': 'logout',
 };
 
 // Функция для обработки кликов по навигационным элементам
@@ -22,7 +22,8 @@ function setupNavigation() {
 
 document.addEventListener("DOMContentLoaded", async function () {
     const contentContainer = document.querySelector(".content-container");
-
+    const loadingSpinner = document.getElementById('loading-spinner');
+    showSpinner();
     try {
         const response = await fetch("/created/orders");
         if (!response.ok) {
@@ -36,8 +37,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function renderOrders(orders, builderId) {
         const contentContainer = document.querySelector(".content-container");
-        contentContainer.innerHTML = ""; // Очищаем контейнер перед рендерингом
-
+        contentContainer.innerHTML = "";
+        if (orders.length === 0) {
+            const emptyMessage = document.createElement("div");
+            emptyMessage.textContent = "Нет доступных заказов";
+            emptyMessage.style.fontSize = "20px";
+            emptyMessage.style.color = "#aaa";
+            emptyMessage.style.textAlign = "center";
+            emptyMessage.style.marginTop = "50px";
+            contentContainer.appendChild(emptyMessage);
+            return;
+        }
         orders.forEach(order => {
             const orderBlock = document.createElement("div");
             orderBlock.classList.add("order-block");
@@ -123,14 +133,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             itemBlock.classList.add("order-item-block");
 
             itemBlock.innerHTML = `
-        <!-- Картинка товара -->
         <img class="img_item" src="${item.imageUrl}" alt="${item.name}" />
-        <!-- Название и статус -->
         <div class="item-details">
             <div class="_00001">${item.name}</div>
             <div class="url">Ссылка: <a href="${item.url}" target="_blank" class="no-toggle">Перейти</a></div>
         </div>
-        <!-- Цена и кнопка -->
         <div class="item-action">
             <div class="_134500 no-toggle">${item.price || "Не указана"}₽</div>
             <div class="quantity no-toggle">Количество: ${item.quantity}</div>
@@ -146,6 +153,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                 event.stopPropagation(); // Останавливаем всплытие клика
             });
         });
+    }
+
+    function showSpinner() {
+        loadingSpinner.style.display = 'block';
+    }
+
+    function hideSpinner() {
+        loadingSpinner.style.display = 'none';
     }
 });
 

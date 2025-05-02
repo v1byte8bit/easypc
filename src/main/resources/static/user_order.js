@@ -2,7 +2,7 @@ const navLinks = {
     'Персональные данные': '/user/profile',
     'Заказы': '/orders',
     'Сборки': '/builds',
-    'Уведомления': '/notifications',
+    'Уведомления': '/user/notification',
     'Выход': '/logout',
 };
 
@@ -23,7 +23,8 @@ function setupNavigation() {
 
 document.addEventListener("DOMContentLoaded", async function () {
     const contentContainer = document.querySelector(".content-container");
-
+    const loadingSpinner = document.getElementById('loading-spinner');
+    showSpinner();
     try {
         const response = await fetch("/api/orders");
         if (!response.ok) {
@@ -33,11 +34,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         renderOrders(orders);
     } catch (error) {
         console.error("Ошибка загрузки данных:", error);
+    }finally {
+        hideSpinner();
     }
 
     function renderOrders(orders) {
         const contentContainer = document.querySelector(".content-container");
-        contentContainer.innerHTML = ""; // Очищаем контейнер перед рендерингом
+        contentContainer.innerHTML = "";
+
+        if (orders.length === 0) {
+            const emptyMessage = document.createElement("div");
+            emptyMessage.textContent = "Нет оформленных заказов";
+            emptyMessage.style.fontSize = "20px";
+            emptyMessage.style.color = "#aaa";
+            emptyMessage.style.textAlign = "center";
+            emptyMessage.style.marginTop = "50px";
+            contentContainer.appendChild(emptyMessage);
+            return;
+        }
 
         orders.forEach(order => {
             const orderBlock = document.createElement("div");
@@ -140,6 +154,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             container.appendChild(itemBlock);
         });
+    }
+
+    function showSpinner() {
+        loadingSpinner.style.display = 'block';
+    }
+
+    function hideSpinner() {
+        loadingSpinner.style.display = 'none';
     }
 });
 

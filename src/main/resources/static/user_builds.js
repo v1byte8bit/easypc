@@ -2,7 +2,7 @@ const navLinks = {
     'Персональные данные': '/user/profile',
     'Заказы': '/orders',
     'Сборки': '/builds',
-    'Уведомления': '/notifications',
+    'Уведомления': '/user/notification',
     'Выход': '/logout',
 };
 
@@ -23,7 +23,8 @@ function setupNavigation() {
 
 document.addEventListener("DOMContentLoaded", async function () {
     const contentContainer = document.querySelector(".content-container");
-
+    const loadingSpinner = document.getElementById('loading-spinner');
+    showSpinner();
     try {
         const response = await fetch("/api/builds");
         if (!response.ok) {
@@ -33,14 +34,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         renderBuilds(builds);
     } catch (error) {
         console.error("Ошибка загрузки данных:", error);
+    }finally {
+        hideSpinner();
     }
 
     function renderBuilds(builds) {
-        contentContainer.innerHTML = ""; // Очищаем контейнер перед рендерингом
+        contentContainer.innerHTML = "";
+
+        if (builds.length === 0) {
+            const emptyMessage = document.createElement("div");
+            emptyMessage.textContent = "Нет сохранённых сборок";
+            emptyMessage.style.fontSize = "20px";
+            emptyMessage.style.color = "#aaa";
+            emptyMessage.style.textAlign = "center";
+            emptyMessage.style.marginTop = "50px";
+            contentContainer.appendChild(emptyMessage);
+            return;
+        }
 
         builds.forEach(build => {
             const buildBlock = document.createElement("div");
-            buildBlock.classList.add("build-block"); // Используем новый класс для сборок
+            buildBlock.classList.add("build-block");
 
             buildBlock.innerHTML = `
             <div class="build-info">
@@ -153,6 +167,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         } catch (error) {
             console.error("Ошибка добавления товаров в корзину:", error);
         }
+    }
+
+    function showSpinner() {
+        loadingSpinner.style.display = 'block';
+    }
+
+    function hideSpinner() {
+        loadingSpinner.style.display = 'none';
     }
 });
 

@@ -191,6 +191,7 @@
             align-items: center;
             gap: 15px;
             width: 100%;
+            margin-bottom: 5px;
         }
 
         /* Картинка товара */
@@ -225,6 +226,40 @@
             font-size: 18px;
             font-weight: 400;
         }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Центрируем текст */
+        #loading-spinner {
+            text-align: center;
+            padding: 50px 0;
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -239,7 +274,12 @@
 
 <!-- Основной контент -->
 <main>
-    <div class="content-container"></div>
+    <div class="content-container">
+        <div id="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+            <p>Загрузка заказов пользователей...</p>
+        </div>
+    </div>
 </main>
 
 <script src="/assembler_order.js"></script>

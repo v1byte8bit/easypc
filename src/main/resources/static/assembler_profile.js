@@ -2,7 +2,7 @@ const navLinks = {
     'Персональные данные': '/assembler/profile',
     'Заявки': '/assembler/orders',
     'В работе': '/on_work',
-    'Выход': '/assembler/logout',
+    'Выход': 'logout',
 };
 
 // Функция для обработки кликов по навигационным элементам

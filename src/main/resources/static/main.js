@@ -331,12 +331,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     fetch("/parse?category=" + category, {method: "POST"})
         .then(() => {
-          console.log("Парсинг отправлен, ждём WebSocket сообщения");
-          // Больше ничего не делаем!
         })
         .catch(err => {
           hideSpinner();
-          console.error("Ошибка при парсинге:", err);
           mainContent.innerHTML = "<p>Ошибка при загрузке товаров.</p>";
         });
   }
@@ -370,6 +367,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function showSpinner() {
     loadingSpinner.style.display = 'block';
+    const hint = document.getElementById("category-hint");
+    if (hint) hint.style.display = "none";
   }
 
   function hideSpinner() {
@@ -377,7 +376,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function clearProducts() {
-    productsContainer.innerHTML = '';
+    const productsContainer = document.getElementById("products-container");
+    const hint = document.getElementById("category-hint");
+
+    // Очищаем товары
+    if (productsContainer) productsContainer.innerHTML = "";
+
+    // Показываем подсказку
+    if (hint) hint.style.display = "block";
   }
 
   // Обновляем сумму корзины при загрузке страницы

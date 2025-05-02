@@ -2,7 +2,7 @@ const navLinks = {
   'Персональные данные': '/user/profile',
   'Заказы': '/orders',
   'Сборки': '/builds',
-  'Уведомления': '/notifications',
+  'Уведомления': '/user/notification',
   'Выход': '/logout',
 };
 
