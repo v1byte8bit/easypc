@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (isAuthenticated) {
     updateCartTotal();
     restoreCpuSocketFromCart();
+    updateSidebarMarksFromCart();
   } else {
     localStorage.removeItem("selectedCpuSocket");
     localStorage.removeItem("selectedMemoryType");
@@ -224,7 +225,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           return response.text();
         })
         .then(() => {
-          updateCartTotal(); // Обновляем сумму корзины после добавления
+          updateCartTotal();
+          updateSidebarMarksFromCart();
         })
         .catch(error => {
           console.error("Ошибка:", error);
@@ -386,6 +388,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (hint) hint.style.display = "block";
   }
 
-  // Обновляем сумму корзины при загрузке страницы
+  async function updateSidebarMarksFromCart() {
+    if (!isAuthenticated) return;
+
+    try {
+      const response = await fetch("/cart/items", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      });
+
+      if (!response.ok) throw new Error("Ошибка получения корзины");
+
+      const items = await response.json();
+      const categoriesInCart = new Set(items.map(item => item.category));
+
+      document.querySelectorAll(".sidebar-item").forEach(item => {
+        const category = item.dataset.category;
+        if (categoriesInCart.has(category)) {
+          item.classList.add("checked");
+        } else {
+          item.classList.remove("checked");
+        }
+      });
+    } catch (err) {
+    }
+  }
+
   updateCartTotal();
 });

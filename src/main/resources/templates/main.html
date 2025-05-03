@@ -257,6 +257,28 @@
         transform: translateX(-10px);
       }
     }
+
+    .sidebar-item {
+      position: relative;
+      display: inline-block;
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: #3498db;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+      display: none;
+    }
+
+    .sidebar-item.checked .checkmark {
+      display: block;
+    }
+
   </style>
 </head>
 <body>
@@ -279,15 +301,42 @@
   <div class="content">
     <!-- Боковая панель -->
     <div class="sidebar">
-      <img src="../static/free-icon-cpu-984493-1-10.png" alt="CPU" data-category="cpu" />
-      <img src="../static/free-icon-motherboard-2729189-10.png" alt="Motherboard" data-category="motherboard" />
-      <img src="../static/free-icon-gpu-8245312-10.png" alt="GPU" data-category="gpu" />
-      <img src="../static/free-icon-ram-3385711-10.png" alt="RAM" data-category="ram" />
-      <img src="../static/free-icon-power-supply-15278749-10.png" alt="PSU" data-category="psu" />
-      <img src="../static/free-icon-harddisk-1606079-10.png" alt="HDD" data-category="hdd" />
-      <img src="../static/free-icon-ssd-2764257-10.png" alt="SSD" data-category="ssd" />
-      <img src="../static/free-icon-fan-2422425-10.png" alt="Fan" data-category="fan" />
-      <img src="../static/free-icon-case-2422413-10.png" alt="Case" data-category="case" />
+      <div class="sidebar-item" data-category="cpu">
+        <img src="../static/free-icon-cpu-984493-1-10.png" alt="CPU" data-category="cpu" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="motherboard">
+        <img src="../static/free-icon-motherboard-2729189-10.png" alt="Motherboard" data-category="motherboard" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="gpu">
+        <img src="../static/free-icon-gpu-8245312-10.png" alt="GPU" data-category="gpu" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="ram">
+        <img src="../static/free-icon-ram-3385711-10.png" alt="RAM" data-category="ram" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="psu">
+        <img src="../static/free-icon-power-supply-15278749-10.png" alt="PSU" data-category="psu" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="hdd">
+        <img src="../static/free-icon-harddisk-1606079-10.png" alt="HDD" data-category="hdd" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="ssd">
+        <img src="../static/free-icon-ssd-2764257-10.png" alt="SSD" data-category="ssd" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="fan">
+        <img src="../static/free-icon-fan-2422425-10.png" alt="Fan" data-category="fan" />
+        <span class="checkmark">✔</span>
+      </div>
+      <div class="sidebar-item" data-category="case">
+        <img src="../static/free-icon-case-2422413-10.png" alt="Case" data-category="case" />
+        <span class="checkmark">✔</span>
+      </div>
     </div>
 
     <!-- Основная область -->
@@ -311,6 +360,5 @@ background:#121212; padding:20px; border:1px solid #ccc; box-shadow: 0 2px 10px 
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.2/dist/sockjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
   <script src="/static/main.js"></script>
-
 </body>
 </html>
