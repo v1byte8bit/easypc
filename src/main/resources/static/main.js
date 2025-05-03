@@ -182,7 +182,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (!product.urlId) {
-      console.error("Ошибка: у продукта нет urlId");
       return;
     }
 

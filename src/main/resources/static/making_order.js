@@ -124,6 +124,16 @@ function init() {
         }
     }
 
+    function showOrderSuccessNotice() {
+        const notice = document.getElementById('order-success');
+        if (notice) {
+            notice.style.display = 'block';
+            setTimeout(() => {
+                window.location.href = '/main';
+            }, 2000);
+        }
+    }
+
     // Подтверждение заказа
     document.querySelector(".div18").addEventListener("click", function () {
         if (myPlacemark) {
@@ -145,8 +155,7 @@ function init() {
                 })
             })
                 .then(response => response.text())
-                .then(data => alert("Заказ подтвержден: " + data))
-                .catch(error => console.error("Ошибка:", error));
+                showOrderSuccessNotice();
         } else {
             alert("Выберите адрес на карте.");
         }

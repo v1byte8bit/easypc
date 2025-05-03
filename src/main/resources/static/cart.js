@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cartTotal = document.querySelector(".frame-3"); // Блок для суммы корзины
     const orderButton = document.querySelector(".frame-4"); // Кнопка "Заказать"
     const saveBuildButton = document.querySelector(".frame-5"); // Кнопка "Сохранить сборку"
-    const renderedProducts = new Map(); // Храним товары по их urlId
-
+    const renderedProducts = new Map();
+    const loadingSpinner = document.getElementById('loading-spinner');
     // Добавляем обработчик на кнопку "Заказать"
     orderButton.addEventListener("click", () => {
         fetch("/making/order", {
@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Функция загрузки товаров из корзины
     function loadCartItems() {
+        showSpinner();
         fetch("/cart/items", {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -67,17 +68,36 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .then(products => {
                 console.log("Загруженные товары:", products);
-                mainContent.innerHTML = ""; // Очищаем контейнер перед загрузкой новых товаров
+                [...mainContent.children].forEach(child => {
+                    if (child.id !== "empty-cart-message" && child.id !== "loading-spinner") {
+                        mainContent.removeChild(child);
+                    }
+                });
                 renderedProducts.clear();
 
-                products.forEach(product => {
-                    addOrUpdateProductOnPage(product);
-                });
+                renderedProducts.clear();
 
-                updateCartTotal(); // После загрузки товаров обновляем сумму корзины
+                const emptyMessage = document.getElementById("empty-cart-message");
+                if (!emptyMessage) {
+                    console.warn("Элемент с id 'empty-cart-message' не найден!");
+                }
+
+                if (products.length === 0) {
+                    if (emptyMessage) emptyMessage.style.display = "block";
+                } else {
+                    if (emptyMessage) emptyMessage.style.display = "none";
+                    products.forEach(product => {
+                        addOrUpdateProductOnPage(product);
+                    });
+                }
+
+                updateCartTotal();
+                hideSpinner();
             })
             .catch(error => console.error("Ошибка при загрузке корзины:", error));
     }
+
+
 
     // Функция добавления товара на страницу
     function addOrUpdateProductOnPage(product) {
@@ -169,6 +189,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderedProducts.get(urlId)?.remove();
                 renderedProducts.delete(urlId);
                 updateCartTotal();
+
+                if (renderedProducts.size === 0) {
+                    loadCartItems();
+                }
+
                 localStorage.removeItem("selectedCpuSocket");
                 localStorage.removeItem("selectedMemoryType");
                 localStorage.removeItem("tdp_cpu");
@@ -176,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(error => console.error("Ошибка при удалении товара:", error));
     }
+
 
     // Функция обновления суммы корзины и отображения кнопки "Заказать"
     function updateCartTotal() {
@@ -202,6 +228,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 cartTotal.style.display = "none";
                 orderButton.style.display = "none";
             });
+    }
+
+    function showSpinner() {
+        loadingSpinner.style.display = 'block';
+        //const hint = document.getElementById("category-hint");
+       // if (hint) hint.style.display = "none";
+    }
+
+    function hideSpinner() {
+        loadingSpinner.style.display = 'none';
     }
 
     // Загружаем товары корзины при загрузке страницы
