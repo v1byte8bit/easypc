@@ -24,6 +24,10 @@ public class Notification {
     @Column(name = "message", nullable = false, length = Integer.MAX_VALUE)
     private String message;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
+
     @ColumnDefault("false")
     @Column(name = "answered")
     private Boolean answered;

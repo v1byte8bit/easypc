@@ -95,6 +95,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         message: message,
+                        orderId: currentOrderId,
                         userId: currentUserId,
                         assemblerId: currentAssemblerId,
                         replacementProductUrlIds: replacementUrls

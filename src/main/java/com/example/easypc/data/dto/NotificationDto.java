@@ -12,6 +12,7 @@ import java.util.List;
 public class NotificationDto {
     private Integer id;
     private String message;
+    private Long orderId;
     private List<Integer> replacementProductUrlIds;
 }
 

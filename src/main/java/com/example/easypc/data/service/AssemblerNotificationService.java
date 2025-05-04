@@ -29,6 +29,7 @@ public class AssemblerNotificationService {
 
         Notification notification = new Notification();
         notification.setMessage(message);
+        notification.setOrder(order);
         notification.setUser(user);
         notification.setAssembler(assembler);
         notification.setAnswered(false);
