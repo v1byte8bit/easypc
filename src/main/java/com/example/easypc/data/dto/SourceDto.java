@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
-public class NotificationDto {
+public class SourceDto {
     private Integer id;
-    private String message;
-    private List<Integer> replacementProductUrlIds;
+    private String source;
+    private String category;
 }
-
 

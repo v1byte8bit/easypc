@@ -7,6 +7,9 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -34,4 +37,9 @@ public class Notification {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ElementCollection
+    @CollectionTable(name = "notification_replacement_products", joinColumns = @JoinColumn(name = "notification_id"))
+    @Column(name = "product_url_id")
+    private List<Integer> replacementProductUrlIds = new ArrayList<>();
 }

@@ -46,6 +46,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 item.addEventListener('click', () => {
                     notificationDetail.innerHTML = `<h3>Текст уведомления</h3><p>${notification.message}</p>`;
+
+                    if (notification.replacementProductUrlIds && notification.replacementProductUrlIds.length > 0) {
+                        const replacementsContainer = document.createElement('div');
+                        replacementsContainer.innerHTML = `<h4>Предложенные замены:</h4>`;
+
+                        notification.replacementProductUrlIds.forEach(productUrlId => {
+                            fetch('/scrape?urlId=' + encodeURIComponent(productUrlId))
+                                .then(resp => resp.ok ? resp.json() : Promise.reject())
+                                .then(product => {
+                                    const card = document.createElement('div');
+                                    card.className = 'replacement-card';
+
+                                    // Сформировать HTML для характеристик, если они есть
+                                    let characteristicsHtml = '';
+                                    if (product.characteristics && Array.isArray(product.characteristics)) {
+                                        characteristicsHtml = product.characteristics.map(c =>
+                                            `<p><strong>${c.name}</strong>: ${c.value}</p>`
+                                        ).join('');
+                                    }
+
+                                    card.innerHTML = `
+                <div class="replacement-content">
+                    <img src="${product.img}" alt="${product.name}" class="content-image" />
+                    <div class="content-text">
+                        <h3>${product.name || "Не указано"}</h3>
+                        <p class="product-price">Цена: ₽${product.price || "Не указана"}</p>
+                        <div class="product-characteristics">
+                            ${characteristicsHtml}
+                        </div>
+                        <button class="add-button" data-id="${product.urlId}">Выбрать</button>
+                    </div>
+                </div>
+            `;
+                                    replacementsContainer.appendChild(card);
+                                })
+                                .catch(() => {
+                                    const err = document.createElement('p');
+                                    err.textContent = `Не удалось загрузить товар: ${productUrlId}`;
+                                    replacementsContainer.appendChild(err);
+                                });
+                        });
+
+                        notificationDetail.appendChild(replacementsContainer);
+                    }
                 });
 
                 notificationsList.appendChild(item);

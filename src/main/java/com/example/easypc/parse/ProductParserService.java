@@ -2,7 +2,6 @@ package com.example.easypc.parse;
 
 import com.example.easypc.data.entity.Source;
 import com.example.easypc.data.repository.SourceRepository;
-import com.example.easypc.filter.ProductComparator;
 import com.example.easypc.filter.ProductPriceComparator;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -15,7 +14,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor

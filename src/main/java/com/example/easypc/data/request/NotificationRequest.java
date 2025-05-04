@@ -3,10 +3,13 @@ package com.example.easypc.data.request;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class NotificationRequest {
     private String message;
-    private Integer userId;
-    private Integer assemblerId;
+    private Long userId;
+    private Long assemblerId;
+    private List<Integer> replacementProductUrlIds;
 }

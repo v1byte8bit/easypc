@@ -24,7 +24,11 @@ public class UserNotificationService {
 
         return notificationRepository.findByUserId(user.getId())
                 .stream()
-                .map(n -> new NotificationDto(n.getId(), n.getMessage()))
+                .map(n -> new NotificationDto(
+                        n.getId(),
+                        n.getMessage(),
+                        n.getReplacementProductUrlIds()
+                ))
                 .collect(Collectors.toList());
     }
 }

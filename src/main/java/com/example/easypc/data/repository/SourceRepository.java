@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface SourceRepository extends JpaRepository<Source, Long> {
     List<Source> findByCategory(String category);
+
 }

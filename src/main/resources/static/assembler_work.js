@@ -41,13 +41,20 @@ document.addEventListener("DOMContentLoaded", async function () {
     closeModalButton.addEventListener('click', closeModal);
     modal.style.display = "none";
     modal.innerHTML = `
-        <div class="modal-content">
-            <span class="close-button" id="close-modal">&times;</span>
-            <h2>Создать уведомление</h2>
-            <textarea id="notification-text" placeholder="Введите сообщение..."></textarea>
-            <button id="send-notification-button">Отправить</button>
-        </div>
-    `;
+    <div class="modal-content">
+        <span class="close-button" id="close-modal">&times;</span>
+        <h2>Создать уведомление</h2>
+        <textarea id="notification-text" placeholder="Введите сообщение..."></textarea>
+        <select class="replacement-url-select" data-index="0">
+            <option value="">Выберите товар-замену #1</option>
+        </select>
+        <select class="replacement-url-select" data-index="1">
+             <option value="">Выберите товар-замену #2</option>
+        </select>
+        <button id="send-notification-button">Отправить</button>
+    </div>
+`;
+
     document.body.appendChild(modal);
 
     let currentOrderId = null;
@@ -73,13 +80,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                     return;
                 }
 
+                const replacementSelects = document.querySelectorAll(".replacement-url-select");
+                const replacementUrls = Array.from(replacementSelects)
+                    .map(select => select.value.trim())
+                    .filter(id => id);
+
+                if (replacementUrls.length > 2) {
+                    alert("Можно указать не более двух товаров-замен");
+                    return;
+                }
+
                 const response = await fetch(`/notifications/create/${currentOrderId}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         message: message,
                         userId: currentUserId,
-                        assemblerId: currentAssemblerId
+                        assemblerId: currentAssemblerId,
+                        replacementProductUrlIds: replacementUrls
                     })
                 });
 
@@ -87,6 +105,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     alert(`Уведомление отправлено для заказа #${currentOrderId}`);
                     modal.style.display = "none";
                     document.getElementById("notification-text").value = "";
+                    replacementSelects.forEach(select => select.value = "");
                 } else {
                     alert("Ошибка при отправке уведомления");
                 }
@@ -154,11 +173,33 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const notBtn = orderBlock.querySelector(".not_btn");
             if (notBtn) {
-                notBtn.addEventListener("click", () => {
+                notBtn.addEventListener("click", async () => {
                     currentOrderId = order.id;
                     currentUserId = order.userId;
                     currentAssemblerId = order.assemblerId;
+
                     document.getElementById("notification-text").value = "";
+
+                    document.querySelectorAll(".replacement-url-select").forEach(select => {
+                        select.innerHTML = '<option value="">Выберите товар-замену</option>';
+                    });
+                    try {
+                        const res = await fetch("/notifications/source/all");
+                        if (!res.ok) throw new Error("Ошибка загрузки товаров");
+                        const products = await res.json();
+
+                        document.querySelectorAll(".replacement-url-select").forEach(select => {
+                            products.forEach(p => {
+                                const option = document.createElement("option");
+                                option.value = p.id;
+                                option.textContent = `${p.category}: ${p.source}`;
+                                select.appendChild(option);
+                            });
+                        });
+                    } catch (e) {
+                        console.error("Ошибка загрузки товаров:", e);
+                        alert("Не удалось загрузить товары для выбора");
+                    }
                     modal.style.display = "flex";
                 });
             }
