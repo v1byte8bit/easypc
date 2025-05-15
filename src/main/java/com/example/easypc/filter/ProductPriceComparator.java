@@ -81,7 +81,7 @@ public class ProductPriceComparator {
     public void processProductList(List<ProductData> products) {
         if (products == null || products.isEmpty()) return;
 
-        String category = products.get(0).getCategory(); // Предполагаем, что все из одной категории
+        String category = products.get(0).getCategory();
         productCache.putIfAbsent(category, new ArrayList<>());
         List<ProductData> existingProducts = productCache.get(category);
         List<ProductData> updatedProducts = new ArrayList<>(existingProducts);

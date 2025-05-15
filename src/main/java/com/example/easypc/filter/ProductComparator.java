@@ -20,9 +20,6 @@ public class ProductComparator {
         int maxLength = Math.max(nameA.length(), nameB.length());
 
         double similarity = 1.0 - ((double) distance / maxLength);
-        /*System.out.println("Name A: " + nameA);
-        System.out.println("Name B: " + nameB);
-        System.out.println("Similarity: " + similarity);*/
         if (similarity > 0.70) {
             Map<String, String> charA = a.getCharacteristics();
             Map<String, String> charB = b.getCharacteristics();

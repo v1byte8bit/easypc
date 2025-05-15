@@ -20,16 +20,6 @@ public class CitilinkProductParser implements ProductParser {
 
     private WebDriver driver;
 
-    private void restartDriver() {
-        try {
-            if (driver != null) {
-                driver.quit();
-            }
-        } catch (Exception ignored) {}
-
-        this.driver = new ChromeDriver(options);
-    }
-
     public CitilinkProductParser() {
         System.setProperty("webdriver.chrome.driver", "C:/chromedriver-win64/chromedriver.exe");
 
@@ -57,10 +47,12 @@ public class CitilinkProductParser implements ProductParser {
             Thread.sleep(3000);
 
             WebDriverWait wait = new WebDriverWait(localDriver, Duration.ofSeconds(15));
-            wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.cssSelector("div[data-meta-name='ProductHeaderLayout__title'] h1")));
-
-            String productName = localDriver.findElement(By.cssSelector("div[data-meta-name='ProductHeaderLayout__title'] h1")).getText();
+            JavascriptExecutor js = (JavascriptExecutor) localDriver;
+            String productName = (String) js.executeScript(
+                    "return Array.from(document.querySelectorAll('h1'))" +
+                            ".map(e => e.textContent.trim())" +
+                            ".find(t => t.length > 0);"
+            );
             productName = cleanName(productName);
 
             wait.until(ExpectedConditions.presenceOfElementLocated(

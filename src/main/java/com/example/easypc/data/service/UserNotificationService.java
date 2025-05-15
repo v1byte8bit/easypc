@@ -10,12 +10,9 @@ import com.example.easypc.data.repository.OrderRepository;
 import com.example.easypc.data.repository.SourceRepository;
 import com.example.easypc.data.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

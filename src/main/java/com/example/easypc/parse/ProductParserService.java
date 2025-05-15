@@ -20,9 +20,6 @@ import java.util.concurrent.Executors;
 public class ProductParserService {
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    @Autowired
     private SourceRepository sourceRepository;
 
     @Autowired
@@ -31,29 +28,31 @@ public class ProductParserService {
     @Autowired
     private ProductPriceComparator productPriceComparator;
 
-    /*
-        Каждый запрос на парсинг запускается в отдельном потоке с помощью ExecutorService и CompletableFuture
-    */
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    //Каждый запрос на парсинг запускается в отдельном потоке с помощью ExecutorService и CompletableFuture
     @Async
     public CompletableFuture<List<ProductData>> parseAndSendData(String category) {
         List<Source> sources = sourceRepository.findByCategory(category);
         ExecutorService executor = Executors.newFixedThreadPool(10);
 
-        // Собираем парсинг в futures
         List<CompletableFuture<ProductData>> futures = sources.stream()
                 .map(source -> CompletableFuture.supplyAsync(() -> parseProduct(source, category), executor))
                 .toList();
 
-        // Дожидаемся завершения всех задач
         List<ProductData> productList = futures.stream()
                 .map(CompletableFuture::join)
                 .filter(Objects::nonNull)
                 .toList();
 
         executor.shutdown();
-        productPriceComparator.processProductList(productList);
+        productList.forEach(product ->
+                rabbitTemplate.convertAndSend("productExchange", "product.data", product)
+        );
         return CompletableFuture.completedFuture(productList);
     }
+
 
     public ProductData parseSingleProduct(Long urlId) {
         Source source = sourceRepository.findById(urlId).orElse(null);
