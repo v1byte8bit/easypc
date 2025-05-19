@@ -53,7 +53,6 @@ public class ProductParserService {
         return CompletableFuture.completedFuture(productList);
     }
 
-
     public ProductData parseSingleProduct(Long urlId) {
         Source source = sourceRepository.findById(urlId).orElse(null);
         return source != null ? parseProduct(source, source.getCategory()) : null;
