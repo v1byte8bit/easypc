@@ -6,6 +6,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.*;
@@ -16,38 +17,22 @@ import java.util.regex.Pattern;
 @Component
 public class CitilinkProductParser implements ProductParser {
 
-    private final ChromeOptions options;
+    private final WebDriverPool driverPool;
 
-    private WebDriver driver;
-
-    public CitilinkProductParser() {
-        System.setProperty("webdriver.chrome.driver", "C:/chromedriver-win64/chromedriver.exe");
-
-        options = new ChromeOptions();
-        options.addArguments("--headless");
-        options.addArguments("--disable-gpu");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--blink-settings=imagesEnabled=false");
-        options.setExperimentalOption("excludeSwitches", List.of("enable-automation", "disable-popup-blocking"));
-        options.setExperimentalOption("useAutomationExtension", false);
-        options.setPageLoadStrategy(PageLoadStrategy.NONE);
-
-        this.driver = new ChromeDriver(options);
+    @Autowired
+    public CitilinkProductParser(WebDriverPool driverPool) {
+        this.driverPool = driverPool;
     }
-
 
     @Override
     public ProductData parse(Source source, String category) {
+        WebDriver driver = driverPool.getDriver();
         String url = source.getSource();
-        WebDriver localDriver = null;
         try {
-            localDriver = new ChromeDriver(options);
-            localDriver.get(url);
-            Thread.sleep(3000);
-
-            WebDriverWait wait = new WebDriverWait(localDriver, Duration.ofSeconds(15));
-            JavascriptExecutor js = (JavascriptExecutor) localDriver;
+            driver.get(url);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("h1")));
+            JavascriptExecutor js = (JavascriptExecutor) driver;
             String productName = (String) js.executeScript(
                     "return Array.from(document.querySelectorAll('h1'))" +
                             ".map(e => e.textContent.trim())" +
@@ -57,20 +42,20 @@ public class CitilinkProductParser implements ProductParser {
 
             wait.until(ExpectedConditions.presenceOfElementLocated(
                     By.cssSelector("span[class*='MainPriceNumber']")));
-            String productPrice = localDriver.findElement(By.cssSelector("span[class*='MainPriceNumber']")).getText();
+            String productPrice = driver.findElement(By.cssSelector("span[class*='MainPriceNumber']")).getText();
 
-            String imageUrl = localDriver.findElement(By.cssSelector("meta[property='og:image']")).getAttribute("content");
+            String imageUrl = driver.findElement(By.cssSelector("meta[property='og:image']")).getAttribute("content");
             Long urlId = Long.valueOf(source.getId());
 
-            Map<String, String> characteristics = extractCharacteristics(category, url, localDriver);
+            Map<String, String> characteristics = extractCharacteristics(category, url, driver);
 
             return new ProductData(productName, productPrice, category, imageUrl, urlId, characteristics);
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (localDriver != null) {
-                localDriver.quit();
+            if (driver != null) {
+                driver.quit();
             }
         }
         return null;

@@ -2,7 +2,6 @@ package com.example.easypc.parse;
 
 import com.example.easypc.data.entity.Source;
 import com.example.easypc.data.repository.SourceRepository;
-import com.example.easypc.filter.ProductPriceComparator;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +25,18 @@ public class ProductParserService {
     private final List<ProductParser> parsers;
 
     @Autowired
-    private ProductPriceComparator productPriceComparator;
+    private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private ExecutorService parserExecutor;
 
     //Каждый запрос на парсинг запускается в отдельном потоке с помощью ExecutorService и CompletableFuture
     @Async
     public CompletableFuture<List<ProductData>> parseAndSendData(String category) {
         List<Source> sources = sourceRepository.findByCategory(category);
-        ExecutorService executor = Executors.newFixedThreadPool(10);
 
         List<CompletableFuture<ProductData>> futures = sources.stream()
-                .map(source -> CompletableFuture.supplyAsync(() -> parseProduct(source, category), executor))
+                .map(source -> CompletableFuture.supplyAsync(() -> parseProduct(source, category), parserExecutor))
                 .toList();
 
         List<ProductData> productList = futures.stream()
@@ -46,7 +44,7 @@ public class ProductParserService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        executor.shutdown();
+        parserExecutor.shutdown();
         productList.forEach(product ->
                 rabbitTemplate.convertAndSend("productExchange", "product.data", product)
         );
