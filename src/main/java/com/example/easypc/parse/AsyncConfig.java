@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 public class AsyncConfig {
     @Bean
     public ExecutorService parserExecutor() {
-        int threads = Runtime.getRuntime().availableProcessors() * 8;
+        int threads = Runtime.getRuntime().availableProcessors();
         return Executors.newFixedThreadPool(threads);
     }
 }

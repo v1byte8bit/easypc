@@ -44,7 +44,6 @@ public class ProductParserService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        parserExecutor.shutdown();
         productList.forEach(product ->
                 rabbitTemplate.convertAndSend("productExchange", "product.data", product)
         );
