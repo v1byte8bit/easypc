@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const isAuthenticated = authButton?.dataset.authenticated === "true";
   const renderedProducts = new Map();
   let currentCategory = null;
+  const hoverHintWrapper = document.getElementById("hover-hint-wrapper");
+  const hintTextElement = document.getElementById("hover-hint-text");
 
   const categoryLocalStorageMap = {
     cpu: {
@@ -21,6 +23,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     motherboard: {
       "Тип памяти": "selectedMemoryType"
     }
+  };
+
+  const hintTexts = {
+    cpu: "Intel Core i3 и AMD Ryzen 3 — хорошие варианты для офисных задач и базового использования.<br>" +
+        "Intel Core i5 и AMD Ryzen 5 идеально подходят для игр и универсальных сборок.<br>" +
+        "Если вы работаете с рендерингом, моделированием или видео — лучше выбрать Intel Core i7/i9 или AMD Ryzen 7/9.<br>" +
+        "Для экстремальной производительности — AMD Threadripper или Intel Core X.",
+    motherboard: "Для офисных и недорогих сборок подойдут платы с чипсетами Intel H610 или AMD A520.<br>" +
+        "Если вы собираете игровой ПК — выбирайте Intel B660/B760 или AMD B550/B650.<br>" +
+        "Для разгона процессора и поддержки PCIe 4.0/5.0 подойдут платы Intel Z690/Z790 или AMD X570/X670.",
+    gpu: "NVIDIA GeForce GTX 1650 или AMD Radeon RX 6400 подойдут для простых игр и мультимедиа.<br>" +
+        "Для комфортной игры в 1080p выбирайте RTX 3060 или RX 6600.<br>" +
+        "Если хотите играть в 2K на высоких настройках — подойдут RTX 3070, RX 6700 XT.<br>" +
+        "Для игр в 4K или работы с нейросетями и рендером — выбирайте RTX 4080, RTX 4090 или AMD RX 7900 XTX.",
+    ram: "Оперативная память влияет на многозадачность. Чем больше — тем лучше.",
+    hdd: "Жесткий диск — для хранения больших объёмов данных. Хорош для фильмов, архивов, игр.",
+    ssd: "SSD обеспечивает быструю загрузку системы и программ.",
   };
 
   async function restoreCpuSocketFromCart() {
@@ -304,7 +323,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         productList.forEach(product => addOrUpdateProductOnPage(product));
       }
 
-      hideSpinner(); // <-- Прячем спиннер ТОЛЬКО когда товары реально пришли
+      hideSpinner();
     });
 
   }
@@ -315,6 +334,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const category = image.dataset.category;
       if (category !== currentCategory) {
         currentCategory = category;
+
+        hoverHintWrapper.style.display = "flex";
+
+        if (hintTexts[category]) {
+          hintTextElement.innerHTML = hintTexts[category];
+        } else {
+          hintTextElement.textContent = "Выберите комплектующее, чтобы получить подсказку.";
+        }
 
         clearProducts();   // Очищаем карточки
         showSpinner();     // Показываем спиннер

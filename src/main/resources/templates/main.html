@@ -279,6 +279,34 @@
       display: block;
     }
 
+    .hover-hint-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .hover-hint-popup {
+      display: none;
+      position: absolute;
+      top: 30px;
+      background-color: #f0f0f0;
+      color: #000;
+      border: 1px solid #ccc;
+      padding: 15px;
+      z-index: 100;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 300px;
+    }
+
+    .hover-hint-wrapper:hover .hover-hint-popup {
+      display: block;
+    }
+
   </style>
 </head>
 <body>
@@ -295,6 +323,13 @@
         <span th:text="${authenticated ? 'Личный кабинет' : 'Авторизация'}"></span>
       </button>
     </span>
+  </div>
+
+  <div id="hover-hint-wrapper" class="hover-hint-wrapper" style="display: none;">
+    <span class="hover-hint-trigger">Что мне подойдёт?</span>
+    <div id="hover-hint-popup" class="hover-hint-popup">
+      <p id="hover-hint-text">Выберите категорию, чтобы получить подсказку.</p>
+    </div>
   </div>
 
   <!-- Контент -->
