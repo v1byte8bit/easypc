@@ -39,8 +39,8 @@ public class CitilinkProductParser implements ProductParser {
             productName = cleanName(productName);
 
             wait.until(ExpectedConditions.presenceOfElementLocated(
-                    By.cssSelector("span[class*='MainPriceNumber']")));
-            String productPrice = driver.findElement(By.cssSelector("span[class*='MainPriceNumber']")).getText();
+                    By.cssSelector("span[data-meta-price]")));
+            String productPrice = driver.findElement(By.cssSelector("span[data-meta-price]")).getAttribute("data-meta-price");
 
             String imageUrl = driver.findElement(By.cssSelector("meta[property='og:image']")).getAttribute("content");
             Long urlId = Long.valueOf(source.getId());
