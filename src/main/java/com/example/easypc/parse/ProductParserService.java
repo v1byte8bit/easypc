@@ -5,7 +5,10 @@ import com.example.easypc.data.repository.SourceRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,6 +53,7 @@ public class ProductParserService {
         return CompletableFuture.completedFuture(productList);
     }
 
+    @Cacheable(value = "productCache", key = "#urlId")
     public ProductData parseSingleProduct(Long urlId) {
         Source source = sourceRepository.findById(urlId).orElse(null);
         return source != null ? parseProduct(source, source.getCategory()) : null;
