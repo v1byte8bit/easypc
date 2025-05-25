@@ -281,18 +281,21 @@
 
     .hover-hint-wrapper {
       position: relative;
-      display: flex;
+      display: inline-flex;
       justify-content: center;
       margin-bottom: 20px;
       cursor: pointer;
       font-size: 18px;
       font-weight: bold;
+      width: auto
     }
 
     .hover-hint-popup {
       display: none;
       position: absolute;
-      top: 30px;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
       background-color: #f0f0f0;
       color: #000;
       border: 1px solid #ccc;
@@ -301,6 +304,7 @@
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       max-width: 300px;
+      width: max-content;
     }
 
     .hover-hint-wrapper:hover .hover-hint-popup {
