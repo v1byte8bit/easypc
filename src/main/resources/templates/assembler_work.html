@@ -324,6 +324,38 @@
             resize: none;
         }
 
+        /* Стили для селектов */
+        .replacement-url-select {
+            width: 100%; /* Занимает всю доступную ширину */
+            margin: 8px 0; /* Отступы сверху и снизу */
+            padding: 8px;
+            box-sizing: border-box; /* Учитывает padding в ширине */
+            background-color: #1e1e1e;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Чтобы кнопка не вылезала за границы */
+        #send-notification-button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Если текст в опциях слишком длинный - обрезаем его */
+        .replacement-url-select option {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .spinner {
             border: 8px solid #f3f3f3;
             border-top: 8px solid #3498db;
